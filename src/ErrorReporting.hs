@@ -4,7 +4,7 @@ module ErrorReporting where
 -- http://www.randomhacks.net/2007/03/10/haskell-8-ways-to-report-errors/
 
 import qualified Control.Exception as E
-import           Control.Monad.Error
+-- import           Control.Monad.Error
 import           Control.Monad.Except
 import qualified Control.Monad.Trans.Except as TE
 import           Data.Typeable
@@ -145,11 +145,6 @@ example8 x y = do
 data LengthError = EmptyString
                  | StringTooLong Int
                  | OtherError String
-
-
-instance Error LengthError where
-  noMsg = OtherError "A String Error!"
-  strMsg s = OtherError s
 
 instance Show LengthError where
   show EmptyString = "The string was empty!"
