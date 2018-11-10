@@ -20,13 +20,18 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/adomokos/sandbox-hs#readme>
 
 dependencies:
-- base >= 4.7 && < 5
+  - base >= 4.7 && < 5
+  - bytestring
+  - mtl
+  - safe
+  - template-haskell
+  - text
+  - transformers
+  - unordered-containers
+  - vector
 
 library:
   source-dirs: src
-  dependencies:
-  - mtl
-  - transformers
 
 executables:
   sandbox-hs-exe:
@@ -43,9 +48,14 @@ tests:
   sandbox-hs-test:
     main:                Spec.hs
     source-dirs:         test
+    default-extensions:
+    - OverloadedStrings
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
     - sandbox-hs
+    - aeson
+    - aeson-pretty
+    - hspec
