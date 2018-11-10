@@ -32,4 +32,5 @@ main = do
   reportResult (calculateLength "hello")
   reportResult (calculateLength "hello, world!")
   reportResult (calculateLength [])
+  runExceptTExample
 

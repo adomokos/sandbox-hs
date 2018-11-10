@@ -166,3 +166,21 @@ calculateLengthOrFail s | len > 5   = throwError (StringTooLong len)
 reportResult :: LengthMonad Int -> IO ()
 reportResult (Right len) = putStrLn ("The length of the string is " ++ (show len))
 reportResult (Left e) = putStrLn ("Length calculation failed with error: " ++ (show e))
+
+-- Using ErrorT Monad Transformer
+type LengthMonad' = ExceptT String IO
+
+runExceptTExample = do
+  r <- TE.runExceptT (calculateLength' "hello, world!")
+  reportResult' r
+
+calculateLength' :: String -> LengthMonad' Int
+calculateLength' input = do
+  s <- pure input
+  if null s
+     then throwError ""
+     else return $ length s
+
+reportResult' :: Either String Int -> IO ()
+reportResult' (Right len) = putStrLn ("The length of hte string is " ++ (show len))
+reportResult' (Left e) = putStrLn ("Length calculation failed with error" ++ (show e))
