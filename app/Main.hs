@@ -1,10 +1,13 @@
 module Main where
 
-import Lib
-import ErrorReporting
+import           Lib
+import           ErrorReporting
+import qualified XmlLearning.Runner as X
 
 main :: IO ()
 main = do
+  X.run
+
   putStrLn "Program starting..."
   example1 1 0
   example2 1 0
