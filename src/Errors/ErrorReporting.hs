@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
-module ErrorReporting where
+module Errors.ErrorReporting where
 
 -- http://www.randomhacks.net/2007/03/10/haskell-8-ways-to-report-errors/
 
