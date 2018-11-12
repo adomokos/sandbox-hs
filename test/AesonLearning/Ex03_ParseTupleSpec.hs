@@ -16,7 +16,7 @@ parseTuple (Object obj) = do
   -- look up the "a" field
   let mbFieldA = HM.lookup "a" obj
 
-  -- fail it it wasn't found
+  -- fail if it wasn't found
   fieldA <- case mbFieldA of
     Just x -> return x
     Nothing -> fail "no field 'a'"
@@ -85,4 +85,3 @@ spec =
     it "works with applicative style" $ do
       let y = parseMaybe (parseArray parseTuple''') =<< decode s
       y `shouldBe` Just [("hello",True),("word",False)]
-
