@@ -6,8 +6,8 @@ build: ## Build with Stack
 .PHONY: build
 
 test: ## Run the tests
-	# stack build --fast --test --test-arguments=--format=progress -j4
-	stack build --fast --test
+	stack build --fast --test --test-arguments=--format=progress -j4
+	# stack build --fast --test
 .PHONY: test
 
 repl: ## Run a REPL for development
