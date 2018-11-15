@@ -33,6 +33,8 @@ dependencies:
   - vector
   - xml-conduit
   - xml-hamlet
+  - hourglass
+  - time
 
 library:
   source-dirs: src
