@@ -3,8 +3,8 @@
 module XmlLearning.Runner where
 
 import XmlLearning.Cursor
-import XmlLearning.Transform
-import XmlLearning.CreateXml
+import XmlLearning.Transform ()
+import XmlLearning.CreateXml 
 import XmlLearning.Hamlet
 import XmlLearning.StyleTag
 

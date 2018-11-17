@@ -13,7 +13,7 @@ import           Data.Typeable
 
 -- | 1. Use error
 myDiv1 :: Float -> Float -> Float
-myDiv1 x 0 = error "Division by zero"
+myDiv1 _ 0 = error "Division by zero"
 myDiv1 x y = x / y
 
 example1 :: Float -> Float -> IO ()
@@ -23,7 +23,7 @@ example1 x y =
 
 -- | 2. Use Maybe
 myDiv2 :: Float -> Float -> Maybe Float
-myDiv2 x 0 = Nothing
+myDiv2 _ 0 = Nothing
 myDiv2 x y = Just (x/y)
 
 example2 :: Float -> Float -> IO ()
@@ -43,11 +43,11 @@ example2' :: Float -> Float -> Float -> IO ()
 example2' x y z =
   case divSum2 x y z of
     Nothing -> putStrLn "Division by zero"
-    Just x  -> putStrLn (show x)
+    Just x'  -> putStrLn (show x')
 
 -- | Use Either String a
 myDiv3 :: Float -> Float -> Either String Float
-myDiv3 x 0 = Left "Division by zero"
+myDiv3 _ 0 = Left "Division by zero"
 myDiv3 x y = Right ( x / y )
 
 example3 :: Float -> Float -> IO ()
@@ -73,19 +73,22 @@ example3' x y z =
 -- What if we don't care what monad our caller is using?
 -- This error-reporting is widely used in standard libraries.
 myDiv4 :: (Monad m) => Float -> Float -> m Float
-myDiv4 x 0 = fail "Division by zero"
+myDiv4 _ 0 = fail "Division by zero"
 myDiv4 x y = return (x / y)
 
+example4a :: Float -> Float -> IO ()
 example4a x y =
   case myDiv4 x y of
     Nothing -> putStrLn "Divison by zero"
     Just q -> putStrLn (show q)
 
+example4b :: Float -> Float -> IO ()
 example4b x y =
   case myDiv4 x y of
     Left msg -> putStrLn msg
     Right q -> putStrLn (show q)
 
+example4c :: Float -> Float -> IO ()
 example4c x y =
   E.catch (do q <- myDiv4 x y
               putStrLn (show q))
@@ -107,7 +110,7 @@ instance Show CustomError where
 -- we user error values:
 myDiv5 :: (MonadError CustomError m) =>
           Float -> Float -> m Float
-myDiv5 x 0 = throwError DivByZero
+myDiv5 _ 0 = throwError DivByZero
 myDiv5 x y = return (x / y)
 
 example5 :: Float -> Float ->
@@ -119,10 +122,11 @@ example5 x y =
 
 -- | 6. Use ioerror and catch
 myDiv7 :: Float -> Float -> IO Float
-myDiv7 x 0 = ioError (userError "Division by zero")
+myDiv7 _ 0 = ioError (userError "Division by zero")
 myDiv7 x y = return (x / y)
 
 -- example7 :: Float -> Float -> IO String
+example7 :: Float -> Float -> IO ()
 example7 x y =
   E.catch (do q <- myDiv7 x y
               putStrLn (show q))
@@ -132,9 +136,10 @@ example7 x y =
 type ErrIO = TE.ExceptT String IO
 
 myDiv8 :: Float -> Float -> ErrIO Float
-myDiv8 x 0 = throwError "Division by zero"
+myDiv8 _ 0 = throwError "Division by zero"
 myDiv8 x y = return (x / y)
 
+example8 :: Float -> Float -> IO ()
 example8 x y = do
   result <- TE.runExceptT (myDiv8 x y)
   case result of
@@ -157,8 +162,10 @@ type LengthMonad = Either LengthError
 calculateLength :: String -> LengthMonad Int
 calculateLength s = (calculateLengthOrFail s) `catchError` Left
 
-calculateLengthOrFail :: String -> LengthMonad Int
+calcualteLengthOrFail :: MonadError LengthError m => [a1] -> m a2
 calcualteLengthOrFail [] = throwError EmptyString
+calculateLengthOrFail :: (MonadError LengthError m, Foldable t) =>
+                               t a -> m Int
 calculateLengthOrFail s | len > 5   = throwError (StringTooLong len)
                         | otherwise = return len
   where len = length s
@@ -170,6 +177,7 @@ reportResult (Left e) = putStrLn ("Length calculation failed with error: " ++ (s
 -- Using ErrorT Monad Transformer
 type LengthMonad' = ExceptT String IO
 
+runExceptTExample :: IO ()
 runExceptTExample = do
   r <- TE.runExceptT (calculateLength' "hello, world!")
   reportResult' r
