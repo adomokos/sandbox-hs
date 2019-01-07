@@ -1,4 +1,4 @@
-module MonadTransformers.Intro where
+module MonadTransformers.IntroSpec where
 
 import Test.Hspec
 
