@@ -2,7 +2,7 @@ module Main where
 
 import Options.Applicative as Opt
 import Data.Semigroup ( (<>) )
-import Data.Char
+import Data.Char (toUpper)
 
 {-
   Types:
@@ -11,17 +11,24 @@ import Data.Char
   3. Args
 -}
 
-data Welcome = Welcome { name :: String }
+data Welcome = Welcome { name :: String
+                       , excited :: Bool }
 
 runWithOptions :: Welcome -> IO ()
 runWithOptions opts =
-  putStrLn ("Enjoy the snow, " ++ name opts ++ "!")
+  putStrLn $ transform $
+    "Enjoy the snow, " ++ name opts ++ "!"
+  where
+    transform = if excited opts then map toUpper else id
 
 main :: IO ()
 main = execParser opts >>= runWithOptions
   -- execParser :: ParserInfo a -> IO a
     where
       parser = Welcome <$> argument str (metavar "NAME")
+                       <*> switch (short 'e' <>
+                                   long "excited" <>
+                                    help "Run in excited mode.")
       opts = info parser mempty
       -- info :: Parser a -> InfoMod a -> ParserInfo a
 

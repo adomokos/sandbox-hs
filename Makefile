@@ -18,12 +18,12 @@ repl-test: ## Run a REPL with tests
 	stack ghci :sandbox-hs-test
 .PHONY: repl-test
 
-run: ## Run Krypton locally
+run: ## Run app locally
 	stack exec -- sandbox-hs-exe
 .PHONY: run
 
 run-parser: ## Run the parser example
-	stack build :command-line-parser-exe --fast --exec "command-line-parser-exe NAME=Smith"
+	stack build :command-line-parser-exe --fast --exec "command-line-parser-exe Smith -e"
 
 ghcid: $(GHCID_BIN) ## Verifies quickly if project compiles on file change
 	ghcid --command "make repl"
