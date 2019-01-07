@@ -43,12 +43,24 @@ executables:
   sandbox-hs-exe:
     main:                Main.hs
     source-dirs:         app
+    other-modules: []
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
     - sandbox-hs
+  command-line-parser-exe:
+    main:                Parser.hs
+    source-dirs:         app
+    other-modules: []
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - optparse-applicative
 
 tests:
   sandbox-hs-test:

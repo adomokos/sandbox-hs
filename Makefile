@@ -22,6 +22,9 @@ run: ## Run Krypton locally
 	stack exec -- sandbox-hs-exe
 .PHONY: run
 
+run-parser: ## Run the parser example
+	stack build :command-line-parser-exe --fast --exec "command-line-parser-exe NAME=Smith"
+
 ghcid: $(GHCID_BIN) ## Verifies quickly if project compiles on file change
 	ghcid --command "make repl"
 .PHONY: ghcid
