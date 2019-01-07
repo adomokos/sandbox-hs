@@ -1,5 +1,7 @@
 module Main where
 
+-- From here: https://www.youtube.com/watch?v=htA9-QDCTA0
+
 import Options.Applicative as Opt
 import Data.Semigroup ( (<>) )
 import Data.Char (toUpper)
