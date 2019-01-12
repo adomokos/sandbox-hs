@@ -3,14 +3,14 @@ module MonadTransformers.IntroSpec where
 import Test.Hspec
 
 import Control.Monad
-import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.Class
+import Control.Monad.Trans.Maybe
 
 run :: String -> IO String
 run pwd = do
   password <- runMaybeT $ getPassword pwd
   case password of
-    Just p  -> pure "valid password!"
+    Just p -> pure $ "valid password: " <> p
     Nothing -> pure "invalid password!"
 
 isValid :: String -> Bool
@@ -35,4 +35,4 @@ spec = do
       result <- run "some"
       result `shouldBe` "invalid password!"
       resultGood <- run "myLongPa$$word"
-      resultGood `shouldBe` "valid password!"
+      resultGood `shouldBe` "valid password: myLongPa$$word"

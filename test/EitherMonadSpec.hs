@@ -9,6 +9,7 @@ import           Debug.Trace (traceShow)
 main :: IO ()
 main = hspec spec
 
+traceShow' :: Show b => b -> b
 traceShow' arg = traceShow ("\n\n:: tracing :: - " <> (show arg) <> "\n\n") arg
 
 data Person = Person { firstName :: String

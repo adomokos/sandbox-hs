@@ -6,7 +6,7 @@ module Conduit.SmartDataSpec where
 
 import Test.Hspec
 
-import Conduit (conduitVector, lift)
+import Conduit (conduitVector)
 import Control.Monad.Identity (Identity)
 import Data.Conduit ( ConduitT, Void, await, yield, runConduitPure
                     , runConduit, (.|))
