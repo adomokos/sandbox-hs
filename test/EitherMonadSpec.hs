@@ -4,18 +4,23 @@ module EitherMonadSpec where
 
 import           Test.Hspec
 import qualified Data.Text as T
+import           Debug.Trace (traceShow)
 
 main :: IO ()
 main = hspec spec
+
+traceShow' arg = traceShow ("\n\n:: tracing :: - " <> (show arg) <> "\n\n") arg
 
 data Person = Person { firstName :: String
                      , lastName :: String
                      , age :: Int } deriving (Show, Eq)
 
+
+
 validateFirstName :: Person -> Either T.Text Person
 validateFirstName p@Person {..}
   | firstName == "" = Left "No firstname"
-  | otherwise = Right p
+  | otherwise = Right $ p -- to print it out use `traceShow' p`
 
 validateLastName :: Person -> Either T.Text Person
 validateLastName p@Person {..}
