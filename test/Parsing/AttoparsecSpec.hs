@@ -5,6 +5,7 @@ module Parsing.AttoparsecSpec where
 
 import Test.Hspec
 import Control.Applicative
+import qualified Data.ByteString as B
 import Data.Attoparsec.ByteString.Char8
 import qualified Data.ByteString.Internal as BI
 import Data.Word
@@ -111,5 +112,7 @@ spec =
       entryIP le `shouldBe` IP 124 67 34 60
       entryProduct le `shouldBe` Keyboard
     it "parses multiple log entries" $ do
-      let logEntries = parseOnly logParser logSampleContent
-      length logEntries `shouldBe` 1
+      logEntries <- B.readFile "./resources/sellings.log" >>= pure . parseOnly logParser
+      case logEntries of
+        Left err -> fail err
+        Right les -> length les `shouldBe` 6
