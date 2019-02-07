@@ -7,18 +7,8 @@ import Test.Hspec
 import Control.Applicative
 import qualified Data.ByteString as B
 import Data.Attoparsec.ByteString.Char8
-import qualified Data.ByteString.Internal as BI
 import Data.Word
 import qualified Data.Time as DT
-
-logSampleContent :: BI.ByteString
-logSampleContent =
-  "2013-06-29 11:16:23 124.67.34.60 keyboard\n\
-  \2013-06-29 11:32:12 212.141.23.67 mouse\n\
-  \2013-06-29 11:33:08 212.141.23.67 monitor\n\
-  \2013-06-29 12:12:34 125.80.32.31 speakers\n\
-  \2013-06-29 12:51:50 101.40.50.62 keyboard\n\
-  \2013-06-29 13:10:45 103.29.60.13 mouse"
 
 -- | Types for the log file content
 data Product = Mouse | Keyboard | Monitor | Speakers
@@ -28,8 +18,7 @@ data LogEntry =
   LogEntry { entryTime :: DT.LocalTime
            , entryIP :: IP
            , entryProduct :: Product
-           }
-           deriving (Eq, Show)
+           } deriving (Eq, Show)
 
 type Log = [LogEntry]
 
@@ -112,7 +101,7 @@ spec =
       entryIP le `shouldBe` IP 124 67 34 60
       entryProduct le `shouldBe` Keyboard
     it "parses multiple log entries" $ do
-      logEntries <- B.readFile "./resources/sellings.log" >>= pure . parseOnly logParser
+      logEntries <- parseOnly logParser <$> B.readFile "./resources/sellings.log"
       case logEntries of
         Left err -> fail err
         Right les -> length les `shouldBe` 6
