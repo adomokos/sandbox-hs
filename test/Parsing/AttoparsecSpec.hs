@@ -25,6 +25,8 @@ type Log = [LogEntry]
 -- | Type for IPs.
 data IP = IP Word8 Word8 Word8 Word8 deriving (Eq, Show)
 
+data Source = Internet | Friend | NoAnswer deriving (Eq, Show)
+
 ipParser :: Parser IP
 ipParser = do
   d1 <- decimal
@@ -60,6 +62,12 @@ productParser =
   <|> (string "monitor" >> return Monitor)
   <|> (string "speakers" >> return Speakers)
 
+sourceParser :: Parser Source
+sourceParser =
+      (string "internet" >> return Internet)
+  <|> (string "friend" >> return Friend)
+  <|> (string "noanswer" >> return NoAnswer)
+
 -- | Combining small parsers into one bigger one
 logEntryParser :: Parser LogEntry
 logEntryParser = do
@@ -83,7 +91,7 @@ main :: IO ()
 main = hspec spec
 
 spec :: Spec
-spec =
+spec = do
   describe "Attoparsec" $ do
     it "parses IP address strings" $ do
       let result = parseOnly ipParser "131.45.68.128"
@@ -105,3 +113,10 @@ spec =
       case logEntries of
         Left err -> fail err
         Right les -> length les `shouldBe` 6
+
+  describe "Changes to the original parser" $ do
+    it "parses out source" $ do
+      let parsedData = parseOnly sourceParser "internet"
+      parsedData `shouldBe` Right Internet
+      let parsedData' = parseOnly sourceParser "noanswer"
+      parsedData' `shouldBe` Right NoAnswer
