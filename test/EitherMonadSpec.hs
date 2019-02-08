@@ -16,8 +16,6 @@ data Person = Person { firstName :: String
                      , lastName :: String
                      , age :: Int } deriving (Show, Eq)
 
-
-
 validateFirstName :: Person -> Either T.Text Person
 validateFirstName p@Person {..}
   | firstName == "" = Left "No firstname"
