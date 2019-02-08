@@ -4,7 +4,6 @@ module DateTime.CompareSpec where
 import           Test.Hspec
 import           Data.Maybe (fromJust)
 import Control.Exception (evaluate)
-import qualified Data.Text      as T
 import qualified Data.Hourglass as H
 import qualified Data.Time      as DT
 
