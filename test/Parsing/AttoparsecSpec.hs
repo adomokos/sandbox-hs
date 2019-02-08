@@ -18,6 +18,7 @@ data LogEntry =
   LogEntry { entryTime :: DT.LocalTime
            , entryIP :: IP
            , entryProduct :: Product
+           , entrySource :: Source
            } deriving (Eq, Show)
 
 type Log = [LogEntry]
@@ -82,7 +83,7 @@ logEntryParser = do
   -- Finally, read in the type of product
   p <- productParser
   -- And return the result as a value of type 'LogEntry'
-  return $ LogEntry t ip p
+  return $ LogEntry t ip p NoAnswer
 
 logParser :: Parser Log
 logParser = many $ logEntryParser <* endOfLine
