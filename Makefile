@@ -24,14 +24,7 @@ run: ## Run app locally
 
 run-parser: ## Run the parser example
 	stack build :command-line-parser-exe --fast --exec "command-line-parser-exe Smith -e"
-
-ghcid: $(GHCID_BIN) ## Verifies quickly if project compiles on file change
-	ghcid --command "make repl"
-.PHONY: ghcid
-
-test-ghcid: $(GHCID_BIN) ## Verifies quickly if project compiles on file change for tests
-	ghcid --command "make repl-test"
-.PHONY: ghcid
+.PHONY: run-parser
 
 help: ## Display this message
 	@echo "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
