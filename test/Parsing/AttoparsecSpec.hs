@@ -82,8 +82,13 @@ logEntryParser = do
   _ <- char ' '
   -- Finally, read in the type of product
   p <- productParser
+  -- Look for the field 'Source' and return
+  -- a default value ('NoAnswer') when missing.
+  -- The arguments of 'option' are default
+  -- value followed by the parser to try.
+  s <- option NoAnswer $ char ' ' >> sourceParser
   -- And return the result as a value of type 'LogEntry'
-  return $ LogEntry t ip p NoAnswer
+  return $ LogEntry t ip p s
 
 logParser :: Parser Log
 logParser = many $ logEntryParser <* endOfLine
@@ -113,9 +118,9 @@ spec = do
       logEntries <- parseOnly logParser <$> B.readFile "./resources/sellings.log"
       case logEntries of
         Left err -> fail err
-        Right les -> length les `shouldBe` 6
+        Right les -> length les `shouldBe` 12
 
-  describe "Changes to the original parser" $ do
+  describe "Changes to the original parser" $
     it "parses out source" $ do
       let parsedData = parseOnly sourceParser "internet"
       parsedData `shouldBe` Right Internet
