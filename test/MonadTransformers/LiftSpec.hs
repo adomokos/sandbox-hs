@@ -40,6 +40,12 @@ aReader = do
   let s = "The input was " ++ show x
   pure s
 
+anotherReader :: Reader RInput ROutput
+anotherReader = do
+  x <- ask
+  let s = "I asked again for " ++ show x
+  pure s
+
 type WOutput = [String]
 type WResult = Integer
 
@@ -69,9 +75,13 @@ spec = do
       it "almost does nothing, but useful" $
         runIdentity anIdentity `shouldBe` 6
 
-    describe "Reader monad" $
+    describe "Reader monad" $ do
       it "adds read-only data, used to read config" $
         runReader aReader 3 `shouldBe` "The input was 3"
+
+      it "can run the reader through composed functions" $
+        runReader (aReader >> anotherReader) 3
+          `shouldBe` "I asked again for 3"
 
     describe "Writer monad" $
       it "adds write-only data, used for logging" $
