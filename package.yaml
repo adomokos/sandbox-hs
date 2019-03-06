@@ -24,6 +24,7 @@ dependencies:
   - blaze-html
   - bytestring
   - containers
+  - lens
   - mtl
   - safe
   - template-haskell
