@@ -60,8 +60,8 @@ value = lens _itemValue (\i v -> i { _itemValue = v })
 weight :: Lens' Item Int
 weight = lens _itemWeight (\i w -> i { _itemWeight = w })
 
-main :: IO ()
-main = do
+run :: IO ()
+run = do
   viewExamples
   composedViewExamples
   previewExamples
