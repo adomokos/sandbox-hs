@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeInType #-}
+{-# LANGUAGE FlexibleInstances #-}
 module Validations.HigherKindedDataSpec where
 
 -- https://reasonablypolymorphic.com/blog/higher-kinded-data/
@@ -56,12 +57,24 @@ type family HKD f a where
   HKD Identity a = a
   HKD f        a = f a
 
-data HkdPerson' f = HkdPerson
+data HkdPerson f = HkdPerson
   { hkpName :: HKD f String
   , hkpAge  :: HKD f Int
   } deriving (Generic)
 
-hkValidate :: HkdPerson' Maybe -> Maybe (HkdPerson' Identity)
+instance Show (HkdPerson Identity) where
+  show (HkdPerson name age) = "HkdPerson " <> name <> " " <> show age
+
+instance Show (HkdPerson Maybe) where
+  show (HkdPerson name age) = "HkdPerson " <> show name <> " " <> show age
+
+instance Eq (HkdPerson Identity) where
+  (==) (HkdPerson name age) (HkdPerson name' age') =
+    name == name' && age == age'
+
+type APerson = HkdPerson Identity
+
+hkValidate :: HkdPerson Maybe -> Maybe APerson
 hkValidate (HkdPerson name age) =
   HkdPerson <$> name <*> age
 
@@ -82,10 +95,10 @@ spec =
       pAge' <$> mPerson' `shouldBe` Just (Identity 25)
 
     it "works with higher-kinded type" $ do
-      let hkdPerson = HkdPerson (Just "John") (Just 25) :: HkdPerson' Maybe
+      let hkdPerson = HkdPerson (Just "John") (Just 25) :: HkdPerson Maybe
           (Just result) = hkValidate hkdPerson
-      hkpName result `shouldBe` "John"
-      hkpAge result `shouldBe` 25
-      let hkdPersonWrong = HkdPerson (Just "John") Nothing :: HkdPerson' Maybe
+      show result `shouldBe` "HkdPerson John 25"
+      result `shouldBe` HkdPerson "John" 25
+      let hkdPersonWrong = HkdPerson (Just "John") Nothing :: HkdPerson Maybe
           result' = hkValidate hkdPersonWrong
       isNothing result' `shouldBe` True
