@@ -3,6 +3,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE RecordWildCards #-}
 module Validations.HigherKindedDataSpec where
 
 -- https://reasonablypolymorphic.com/blog/higher-kinded-data/
@@ -11,7 +12,7 @@ import Test.Hspec
 
 import GHC.Generics (Generic)
 import Control.Monad.Identity
-import Data.Maybe (isNothing)
+import Data.Maybe -- (isNothing, maybe)
 
 main :: IO ()
 main = hspec spec
@@ -66,17 +67,28 @@ instance Show (HkdPerson Identity) where
   show (HkdPerson name age) = "HkdPerson " <> name <> " " <> show age
 
 instance Show (HkdPerson Maybe) where
-  show (HkdPerson name age) = "HkdPerson " <> show name <> " " <> show age
+  show (HkdPerson name age) = "HkdPerson (Maybe)" <> show name <> " " <> show age
 
 instance Eq (HkdPerson Identity) where
   (==) (HkdPerson name age) (HkdPerson name' age') =
     name == name' && age == age'
 
 type APerson = HkdPerson Identity
+type MPerson = HkdPerson Maybe
 
 hkValidate :: HkdPerson Maybe -> Maybe APerson
 hkValidate (HkdPerson name age) =
   HkdPerson <$> name <*> age
+
+defaultPerson :: APerson
+defaultPerson = HkdPerson "null" 0
+
+hkValidateWithDefaultPerson :: MPerson -> APerson
+hkValidateWithDefaultPerson p = do
+  HkdPerson (fromMaybe (hkpName defaultPerson) (hkpName p))
+            (fromMaybe (hkpAge defaultPerson) (hkpAge p))
+
+  -- pure defaultPerson
 
 spec :: Spec
 spec =
@@ -95,10 +107,18 @@ spec =
       pAge' <$> mPerson' `shouldBe` Just (Identity 25)
 
     it "works with higher-kinded type" $ do
-      let hkdPerson = HkdPerson (Just "John") (Just 25) :: HkdPerson Maybe
+      let hkdPerson = HkdPerson (Just "John") (Just 25) :: MPerson
           (Just result) = hkValidate hkdPerson
       show result `shouldBe` "HkdPerson John 25"
       result `shouldBe` HkdPerson "John" 25
-      let hkdPersonWrong = HkdPerson (Just "John") Nothing :: HkdPerson Maybe
+      let hkdPersonWrong = HkdPerson (Just "John") Nothing :: MPerson
           result' = hkValidate hkdPersonWrong
       isNothing result' `shouldBe` True
+
+    it "can provide default values for Nothing fields" $ do
+      let hkdPerson = HkdPerson (Just "John") (Just 25) :: MPerson
+          result = hkValidateWithDefaultPerson hkdPerson
+      result `shouldBe` HkdPerson "John" 25
+      let hkdPersonInvalid = HkdPerson Nothing (Just 25) :: MPerson
+          result' = hkValidateWithDefaultPerson hkdPersonInvalid
+      result' `shouldBe` HkdPerson "null" 25
