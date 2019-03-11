@@ -4,6 +4,7 @@
 {-# LANGUAGE TypeInType #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StandaloneDeriving #-}
 module Validations.HigherKindedDataSpec where
 
 -- https://reasonablypolymorphic.com/blog/higher-kinded-data/
@@ -63,18 +64,12 @@ data HkdPerson f = HkdPerson
   , hkpAge  :: HKD f Int
   } deriving (Generic)
 
-instance Show (HkdPerson Identity) where
-  show (HkdPerson name age) = "HkdPerson " <> name <> " " <> show age
-
-instance Show (HkdPerson Maybe) where
-  show (HkdPerson name age) = "HkdPerson (Maybe)" <> show name <> " " <> show age
-
-instance Eq (HkdPerson Identity) where
-  (==) (HkdPerson name age) (HkdPerson name' age') =
-    name == name' && age == age'
-
 type APerson = HkdPerson Identity
 type MPerson = HkdPerson Maybe
+
+deriving instance Show APerson
+deriving instance Show MPerson
+deriving instance Eq APerson
 
 hkValidate :: HkdPerson Maybe -> Maybe APerson
 hkValidate (HkdPerson name age) =
@@ -92,15 +87,17 @@ data ValidationError = NameNotSet
                      | AgeNotSet
                      deriving (Show, Eq)
 
-hkValidateWithDefaultsWithErrors :: [ValidationError] -> MPerson -> (APerson, [ValidationError])
-hkValidateWithDefaultsWithErrors _errors' p =
+hkValidateWithDefaultsWithErrors :: MPerson -> (APerson, [ValidationError])
+hkValidateWithDefaultsWithErrors p =
   (person,errors)
     where
       person = HkdPerson (fromMaybe (hkpName defaultPerson) (hkpName p))
                          (fromMaybe (hkpAge defaultPerson) (hkpAge p))
-      errors = []
-
-  -- pure defaultPerson
+      errors = catMaybes $ [nameCheck, ageCheck]
+      nameCheck = fieldCheck (hkpName p) NameNotSet
+      ageCheck = fieldCheck (hkpAge p) AgeNotSet
+      fieldCheck fieldValue errorVal =
+        if isNothing fieldValue then Just errorVal else Nothing
 
 spec :: Spec
 spec =
@@ -121,7 +118,7 @@ spec =
     it "works with higher-kinded type" $ do
       let hkdPerson = HkdPerson (Just "John") (Just 25) :: MPerson
           (Just result) = hkValidate hkdPerson
-      show result `shouldBe` "HkdPerson John 25"
+      show result `shouldBe` "HkdPerson {hkpName = \"John\", hkpAge = 25}"
       result `shouldBe` HkdPerson "John" 25
       let hkdPersonWrong = HkdPerson (Just "John") Nothing :: MPerson
           result' = hkValidate hkdPersonWrong
@@ -134,3 +131,9 @@ spec =
       let hkdPersonInvalid = HkdPerson Nothing (Just 25) :: MPerson
           result' = hkValidateWithDefaultPerson hkdPersonInvalid
       result' `shouldBe` HkdPerson "null" 25
+
+    it "can accumulate errors" $ do
+      let hkdPersonInvalid = HkdPerson Nothing Nothing :: MPerson
+          (result', errors) = hkValidateWithDefaultsWithErrors hkdPersonInvalid
+      result' `shouldBe` HkdPerson "null" 0
+      errors `shouldBe` [NameNotSet, AgeNotSet]
