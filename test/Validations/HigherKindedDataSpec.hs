@@ -84,9 +84,21 @@ defaultPerson :: APerson
 defaultPerson = HkdPerson "null" 0
 
 hkValidateWithDefaultPerson :: MPerson -> APerson
-hkValidateWithDefaultPerson p = do
+hkValidateWithDefaultPerson p =
   HkdPerson (fromMaybe (hkpName defaultPerson) (hkpName p))
             (fromMaybe (hkpAge defaultPerson) (hkpAge p))
+
+data ValidationError = NameNotSet
+                     | AgeNotSet
+                     deriving (Show, Eq)
+
+hkValidateWithDefaultsWithErrors :: [ValidationError] -> MPerson -> (APerson, [ValidationError])
+hkValidateWithDefaultsWithErrors _errors' p =
+  (person,errors)
+    where
+      person = HkdPerson (fromMaybe (hkpName defaultPerson) (hkpName p))
+                         (fromMaybe (hkpAge defaultPerson) (hkpAge p))
+      errors = []
 
   -- pure defaultPerson
 
