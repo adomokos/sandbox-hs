@@ -1,6 +1,7 @@
 module TypeClasses.CustomTypesSpec where
 
 import Test.Hspec
+import Data.Monoid (Sum(..))
 
 -- MyMaybe - like Maybe
 data MyMaybe a = MyNothing
@@ -22,6 +23,16 @@ instance Monad MyMaybe where
   MyNothing >>= _ = MyNothing
   MyJust x >>= f = f x
 
+instance Foldable MyMaybe where
+  foldr _ z MyNothing = z
+  foldr f z (MyJust x) = f x z
+
+  foldl _ z MyNothing = z
+  foldl f z (MyJust x) = f z x
+
+  foldMap _ MyNothing = mempty
+  foldMap f (MyJust x) = f x
+
 -- MyEither - like Either
 data MyEither a b = MyLeft a
                   | MyRight b
@@ -41,6 +52,16 @@ instance Monad (MyEither a) where
   return = pure
   MyLeft x >>= _ = MyLeft x
   MyRight x >>= f = f x
+
+instance Foldable (MyEither a) where
+  foldr _ z (MyLeft _) = z
+  foldr f z (MyRight y) = f y z
+
+  foldl _ z (MyLeft _) = z
+  foldl f z (MyRight x) = f z x
+
+  foldMap _ (MyLeft _) = mempty
+  foldMap f (MyRight x) = f x
 
 leftString :: MyEither String Int
 leftString = MyLeft "Hello"
@@ -67,6 +88,12 @@ spec = do
         (pure 2 >>= (\x -> MyJust (x+3))) `shouldBe` MyJust 5
         (MyNothing >>= (\x -> MyJust (x+3))) `shouldBe` MyNothing
         (pure 2 >>= (\_ -> MyNothing)) `shouldBe` (MyNothing :: MyMaybe Int)
+      it "works as Foldable" $ do
+        let fm = foldMap (+1)
+        (fm MyNothing :: Sum Integer)
+          `shouldBe` Sum 0
+        (fm (MyJust 3) :: Sum Integer)
+          `shouldBe` Sum 4
 
     context "Either-like MyEither" $ do
       it "works as Functor" $ do
@@ -86,3 +113,9 @@ spec = do
           `shouldBe` (MyRight 5 :: MyEither String Int)
         ((pure 2 :: MyEither String Int) >>= (\_ -> leftString))
           `shouldBe` (MyLeft "Hello" :: MyEither String Int)
+      it "works as Foldable" $ do
+        let fm = foldMap (+1)
+        (fm (MyLeft "Hello") :: Sum Integer)
+          `shouldBe` Sum 0
+        (fm (MyRight 4) :: Sum Integer)
+          `shouldBe` Sum 5
