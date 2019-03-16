@@ -33,6 +33,10 @@ instance Foldable MyMaybe where
   foldMap _ MyNothing = mempty
   foldMap f (MyJust x) = f x
 
+instance Traversable MyMaybe where
+  traverse _ MyNothing = pure MyNothing
+  traverse f (MyJust x) = MyJust <$> (f x)
+
 -- MyEither - like Either
 data MyEither a b = MyLeft a
                   | MyRight b
@@ -63,6 +67,10 @@ instance Foldable (MyEither a) where
   foldMap _ (MyLeft _) = mempty
   foldMap f (MyRight x) = f x
 
+instance Traversable (MyEither a) where
+  traverse _ (MyLeft x) = pure (MyLeft x)
+  traverse f (MyRight y) = MyRight <$> f y
+
 leftString :: MyEither String Int
 leftString = MyLeft "Hello"
 
@@ -77,23 +85,29 @@ spec = do
   describe "TypeClass Custom Implementations" $ do
     context "Maybe-like MyMaybe" $ do
       it "works as Functor" $ do
-        fmap (+2) MyNothing `shouldBe` MyNothing
-        fmap (+2) (MyJust 3) `shouldBe` MyJust 5
+        fmap (+2) MyNothing `shouldBe` (MyNothing :: MyMaybe Int)
+        fmap (+2) (MyJust 3) `shouldBe` (MyJust 5 :: MyMaybe Int)
       it "works as Applicative" $ do
-        (+) <$> (MyJust 2) <*> (MyJust 3)
+        (+) <$> (MyJust 2) <*> (MyJust 3 :: MyMaybe Int)
           `shouldBe` MyJust 5
-        (+) <$> MyNothing <*> (MyJust 3)
+        (+) <$> MyNothing <*> (MyJust 3 :: MyMaybe Int)
           `shouldBe` MyNothing
       it "works as Monad" $ do
-        (pure 2 >>= (\x -> MyJust (x+3))) `shouldBe` MyJust 5
-        (MyNothing >>= (\x -> MyJust (x+3))) `shouldBe` MyNothing
-        (pure 2 >>= (\_ -> MyNothing)) `shouldBe` (MyNothing :: MyMaybe Int)
+        (pure 2 >>= (\x -> MyJust (x+3))) `shouldBe` (MyJust 5 :: MyMaybe Int)
+        (MyNothing >>= (\x -> MyJust (x+3))) `shouldBe` (MyNothing :: MyMaybe Int)
+        (pure (2 :: Int) >>= (\_ -> MyNothing)) `shouldBe` (MyNothing :: MyMaybe Int)
       it "works as Foldable" $ do
         let fm = foldMap (+1)
         (fm MyNothing :: Sum Integer)
           `shouldBe` Sum 0
         (fm (MyJust 3) :: Sum Integer)
           `shouldBe` Sum 4
+      it "works as Traversable" $ do
+        let tfn x = MyJust (x+1)
+        traverse tfn (MyJust 3 :: MyMaybe Int)
+          `shouldBe` MyJust (MyJust 4)
+        traverse tfn (MyNothing :: MyMaybe Int)
+          `shouldBe` MyJust (MyNothing)
 
     context "Either-like MyEither" $ do
       it "works as Functor" $ do
@@ -115,7 +129,12 @@ spec = do
           `shouldBe` (MyLeft "Hello" :: MyEither String Int)
       it "works as Foldable" $ do
         let fm = foldMap (+1)
-        (fm (MyLeft "Hello") :: Sum Integer)
+        (fm (MyLeft ("Hello" :: String)) :: Sum Integer)
           `shouldBe` Sum 0
         (fm (MyRight 4) :: Sum Integer)
           `shouldBe` Sum 5
+      it "works as Traversable" $ do
+        let tfn x = MyRight (x+1)
+        traverse tfn (MyRight 3)
+          `shouldBe` (MyRight (MyRight 4) :: MyEither String (MyEither String Int))
+
