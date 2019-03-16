@@ -42,6 +42,12 @@ instance Monad (MyEither a) where
   MyLeft x >>= _ = MyLeft x
   MyRight x >>= f = f x
 
+leftString :: MyEither String Int
+leftString = MyLeft "Hello"
+
+rightInt :: MyEither String Int
+rightInt = MyRight 3
+
 main :: IO ()
 main = hspec spec
 
@@ -64,20 +70,19 @@ spec = do
 
     context "Either-like MyEither" $ do
       it "works as Functor" $ do
-        fmap (+2) (MyLeft "Hello")
-          `shouldBe` (MyLeft "Hello" :: MyEither String Int)
-        fmap (+2) (MyRight 5) `shouldBe` (MyRight 7 :: MyEither String Int)
+        fmap (+2) leftString `shouldBe` leftString
+        fmap (+2) rightInt `shouldBe` MyRight 5
       it "works as Aplicative" $ do
-        MyRight (+2) <*> MyRight 3
-          `shouldBe` (MyRight 5 :: MyEither String Int)
-        MyRight (+2) <*> MyLeft "Hello"
-          `shouldBe` (MyLeft "Hello" :: MyEither String Int)
-        MyLeft "Hello" <*> MyRight 5
-          `shouldBe` (MyLeft "Hello" :: MyEither String Int)
+        MyRight (+2) <*> rightInt
+          `shouldBe` MyRight 5
+        MyRight (+2) <*> leftString
+          `shouldBe` leftString
+        MyLeft "Hello" <*> rightInt
+          `shouldBe` leftString
       it "works as Monad" $ do
-        (MyLeft "Hello" >>= (\x -> MyRight (x+3)))
+        (leftString >>= (\x -> MyRight (x+3)))
           `shouldBe` MyLeft "Hello"
-        (pure 2 >>= (\x -> MyRight (x+3)))
+        ((pure 2 :: MyEither String Int) >>= (\x -> MyRight (x+3)))
           `shouldBe` (MyRight 5 :: MyEither String Int)
-        (pure 2 >>= (\_ -> MyLeft "Hello"))
+        ((pure 2 :: MyEither String Int) >>= (\_ -> leftString))
           `shouldBe` (MyLeft "Hello" :: MyEither String Int)
