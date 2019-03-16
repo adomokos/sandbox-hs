@@ -10,6 +10,7 @@ data Red = Rec {
   phi :: Float
   } deriving (Data, Typeable)
 
+sample :: Red
 sample = Rec 1 2.3 4.5
 
 main :: IO ()
