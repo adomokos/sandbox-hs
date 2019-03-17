@@ -7,3 +7,10 @@ Kicking things around in Haskell.
 ### Topics
 
 * [Aeson Learning](test/AesonLearning)
+* [Conduit](test/Conduit)
+* [Errors](test/Errors)
+* [Monad Transformers](test/MonadTransformers)
+* [Parsing](test/Parsing)
+* [State Monad](test/StateMonad)
+* [Custom Types](test/TypeClasses)
+* [Higher-Kinded Data Types](test/Validations)
