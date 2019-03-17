@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module StringsSpec where
+module Strings.IntroSpec where
 
 import Test.Hspec
 

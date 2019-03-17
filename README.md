@@ -9,6 +9,7 @@ Kicking things around in Haskell.
 * [Aeson Learning](test/AesonLearning)
 * [Conduit](test/Conduit)
 * [Errors](test/Errors)
+* [Strings](test/Strings)
 * [Monad Transformers](test/MonadTransformers)
 * [Parsing](test/Parsing)
 * [Reader Monad](test/ReaderMonad)
