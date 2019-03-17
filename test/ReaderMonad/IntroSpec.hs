@@ -62,6 +62,10 @@ spec = do
     it "works with ask, extracting info from environment" $ do
       let x = runReader (fnReader 10) 20
       x `shouldBe` (10,20)
+    it "works with asks" $ do
+      let reader = Reader (*3)
+      (runReader $ local (+2) reader) 5 `shouldBe` 21
+      -- pending
     it "works with different examples" $ do
       let x = runReader (pure 10 >>= fnReader) 20
       x `shouldBe` (10,20)
