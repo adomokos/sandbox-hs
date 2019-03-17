@@ -11,6 +11,7 @@ Kicking things around in Haskell.
 * [Errors](test/Errors)
 * [Monad Transformers](test/MonadTransformers)
 * [Parsing](test/Parsing)
+* [Reader Monad](test/ReaderMonad)
 * [State Monad](test/StateMonad)
 * [Custom Types](test/TypeClasses)
 * [Higher-Kinded Data Types](test/Validations)
