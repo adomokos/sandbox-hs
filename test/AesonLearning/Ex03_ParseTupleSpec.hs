@@ -34,6 +34,7 @@ parseTuple (Object obj) = do
 
   -- That's all!
   return (a, b)
+parseTuple _other = error "Does not matter for now"
 
 parseTuple' :: Value -> Parser (String, Bool)
 parseTuple' = withObject "tuple" $ \obj -> do

@@ -8,7 +8,7 @@ import Test.Hspec
 
 import Conduit (conduitVector)
 import Control.Monad.Identity (Identity)
-import Data.Conduit ( ConduitT, Void, await, yield, runConduitPure
+import Data.Conduit ( ConduitT, await, yield, runConduitPure
                     , runConduit, (.|))
 import Data.Conduit.List (sourceList)
 import Data.Vector hiding (sum)
@@ -31,12 +31,12 @@ sumFromSource :: [Integer] -> Integer
 sumFromSource lst = sum lst
 
 myIntegerSink :: (Monad m, Num t) => t -> ConduitT t o m t
-myIntegerSink accum = do
+myIntegerSink accumV = do
   maybeFirstVal <- await
   case maybeFirstVal of
-    Nothing -> return accum
+    Nothing -> return accumV
     Just val -> do
-      let newSum = val + accum
+      let newSum = val + accumV
       myIntegerSink newSum
 
 myDoublingConduit :: ConduitT Integer Integer Identity ()
@@ -52,12 +52,12 @@ myDoublingConduit = do
       myDoublingConduit
 
 myIntegerVectorSink :: Integer -> ConduitT (Vector Integer) o IO Integer
-myIntegerVectorSink accum = do
+myIntegerVectorSink accumV = do
   maybeFirstVal <- await
   case maybeFirstVal of
-    Nothing -> return accum
+    Nothing -> return accumV
     Just vals -> do
-      let newSum = (Vec.sum vals) + accum
+      let newSum = (Vec.sum vals) + accumV
       -- lift $ print newSum
       myIntegerVectorSink newSum
 

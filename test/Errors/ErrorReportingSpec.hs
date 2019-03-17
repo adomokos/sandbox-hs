@@ -2,7 +2,6 @@ module Errors.ErrorReportingSpec where
 
 import           Test.Hspec
 import           Errors.ErrorReporting
-import qualified Control.Exception as E
 import Control.Exception (evaluate)
 
 main :: IO ()
