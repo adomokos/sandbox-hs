@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-module EitherMonadSpec where
+module Pipelining.EitherMonadSpec where
 
 import           Test.Hspec
 import qualified Data.Text as T
