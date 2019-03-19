@@ -122,7 +122,7 @@ spec =
       result `shouldBe` HkdPerson "John" 25
       let hkdPersonWrong = HkdPerson (Just "John") Nothing :: MPerson
           result' = hkValidate hkdPersonWrong
-      isNothing result' `shouldBe` True
+      result' `shouldSatisfy` isNothing
 
     it "can provide default values for Nothing fields" $ do
       let hkdPerson = HkdPerson (Just "John") (Just 25) :: MPerson
