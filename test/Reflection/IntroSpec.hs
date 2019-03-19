@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-module Typeable.IntroSpec where
+{-# LANGUAGE DeriveDataTypeable #-}
+module Reflection.IntroSpec where
 
 -- https://chrisdone.com/posts/data-typeable
 
@@ -9,6 +10,10 @@ import Data.Data
 
 main :: IO ()
 main = hspec spec
+
+data X = X { foo :: Int
+           , bar :: Char }
+           deriving (Typeable, Data, Show, Eq)
 
 spec :: Spec
 spec = do
@@ -27,11 +32,24 @@ spec = do
       char () `shouldBe` "unknown"
 
   describe "Data.Data has more info" $ do
-    it "can get the date type" $ do
+    it "1. can get the date type" $ do
       -- dataTypeOf :: Data a => a -> DataType
       let dt = dataTypeOf (Just 'a')
       dataTypeName dt `shouldBe` "Maybe"
       show dt `shouldBe`
         "DataType {tycon = \"Maybe\", datarep = AlgRep [Nothing,Just]}"
-    it "can inspect a data type" $ do
-      pending
+    it "2. can inspect a data type" $ do
+      (dataTypeOf (Just 'a')) `shouldSatisfy` isAlgType
+      (dataTypeOf 'a') `shouldNotSatisfy` isAlgType
+    it "3. can get the constructor of a value" $ do
+      -- You can't do much with the constructor as-is,
+      -- but compare and print it
+      let constr = toConstr (Just 'a')
+      show constr `shouldBe` "Just"
+      let nothingConstr = toConstr (Nothing :: Maybe Char)
+      constr == nothingConstr `shouldBe` False
+      let constructorType = constrType (toConstr (Just 'a'))
+      dataTypeName constructorType `shouldBe` "Maybe"
+    it "4. can get fields of a constructor" $ do
+      let xConstr = toConstr (X 0 'a')
+      constrFields xConstr `shouldBe` ["foo", "bar"]
