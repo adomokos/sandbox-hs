@@ -11,7 +11,7 @@ test: ## Run the tests
 .PHONY: test
 
 repl: ## Run a REPL for development
-	stack ghci
+	stack ghci :sandbox-hs-exe
 .PHONY: repl
 
 repl-test: ## Run a REPL with tests
