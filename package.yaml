@@ -81,6 +81,9 @@ tests:
     - aeson
     - aeson-pretty
     - attoparsec
-    - hspec
     - conduit
+    - hspec
+    - lifted-async
+    - say
+    - stm
     - transformers
