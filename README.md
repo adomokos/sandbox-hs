@@ -7,6 +7,7 @@ Kicking things around in Haskell.
 ### Topics
 
 * [Aeson Learning](test/AesonLearning)
+* [Aeson Lens](test/AesonLearning/AesonLensSpec.hs)
 * [Conduit](test/Conduit)
 * [Errors](test/Errors)
 * [Strings](test/Strings)
