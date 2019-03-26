@@ -10,11 +10,13 @@
       "departments": [
         {
           "name": "Human Resources",
-          "code": "X34-339-17"
+          "code": "X34-339-17",
+          "active": true
         },
         {
-          "nome": "Help Desk",
-          "code": "D38-214-89"
+          "name": "Help Desk",
+          "code": "D38-214-89",
+          "active": false
         }
       ]
     }
