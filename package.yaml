@@ -79,6 +79,7 @@ tests:
     dependencies:
     - sandbox-hs
     - aeson
+    - lens-aeson
     - aeson-pretty
     - attoparsec
     - conduit

@@ -1,0 +1,22 @@
+{
+  "data": {
+    "person": {
+      "name": "John Smith",
+      "age": 28,
+      "address": {
+        "city": "Chicago",
+        "zip": 60021
+      },
+      "departments": [
+        {
+          "name": "Human Resources",
+          "code": "X34-339-17"
+        },
+        {
+          "nome": "Help Desk",
+          "code": "D38-214-89"
+        }
+      ]
+    }
+  }
+}
