@@ -27,18 +27,19 @@ dependencies:
   - blaze-html
   - bytestring
   - containers
+  - hourglass
   - lens
   - mtl
+  - pretty
   - safe
   - template-haskell
   - text
+  - time
   - transformers
   - unordered-containers
   - vector
   - xml-conduit
   - xml-hamlet
-  - hourglass
-  - time
 
 library:
   source-dirs: src
