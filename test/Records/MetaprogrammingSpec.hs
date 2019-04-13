@@ -1,13 +1,14 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+
 module Records.MetaprogrammingSpec where
 
-import Test.Hspec
 import Data.Data
+import Test.Hspec
 
-data Red = Rec {
-  alpha :: Int,
-  beta :: Double,
-  phi :: Float
+data Red = Rec
+  { alpha :: Int
+  , beta :: Double
+  , phi :: Float
   } deriving (Data, Typeable)
 
 sample :: Red
@@ -21,4 +22,4 @@ spec = do
   describe "Metaprogramming on records" $ do
     it "works like this:" $ do
       let fields = constrFields . toConstr $ sample
-      fields `shouldBe` ["alpha","beta","phi"]
+      fields `shouldBe` ["alpha", "beta", "phi"]
