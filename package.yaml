@@ -88,4 +88,5 @@ tests:
     - lifted-async
     - say
     - stm
+    - shakespeare
     - transformers
