@@ -23,6 +23,7 @@ ghc-options:
 description:         Please see the README on GitHub at <https://github.com/adomokos/sandbox-hs#readme>
 
 dependencies:
+  - async
   - base >= 4.7 && < 5
   - blaze-html
   - bytestring

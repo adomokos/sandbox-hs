@@ -1,9 +1,8 @@
 module Main where
 
-import qualified XmlLearning.Runner as XL
+import qualified Async.WarmUp as AW
 import qualified Errors.Runner as ER
+import qualified XmlLearning.Runner as XL
 
 main :: IO ()
-main = do
-  XL.run
-  ER.run
+main = AW.run5
