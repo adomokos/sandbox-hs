@@ -32,6 +32,7 @@ dependencies:
   - lens
   - mtl
   - pretty
+  - pretty-simple
   - safe
   - template-haskell
   - text
