@@ -88,6 +88,7 @@ tests:
     - hspec
     - lifted-async
     - say
+    - random
     - semigroups
     - stm
     - shakespeare
