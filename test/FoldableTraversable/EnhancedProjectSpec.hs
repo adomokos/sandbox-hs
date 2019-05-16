@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor #-}
+
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -30,7 +30,20 @@ newtype ProjectId =
 data Project a
   = Project T.Text a
   | ProjectGroup T.Text [Project a]
-  deriving (Show, Eq, Functor, Foldable, Traversable)
+  -- deriving (Show, Eq, Functor, Foldable, Traversable)
+   deriving (Show, Eq, Foldable, Traversable)
+
+instance Functor Project where
+  fmap f (Project text x) = Project text (f x)
+  fmap f (ProjectGroup text projects) = ProjectGroup text ((fmap . fmap) f projects)
+
+{-
+instance Foldable Project where
+  -- foldr f z (Project text x) = f x z
+  -- foldl f z (Project text x) = f z x
+  foldMap f (Project _text x) = f x
+  foldMap f (ProjectGroup _text (x:xs)) = f x <> foldMap f xs
+-}
 
 data Budget =
   Budget
