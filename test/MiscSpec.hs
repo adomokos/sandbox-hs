@@ -7,13 +7,15 @@ import Test.Hspec
 
 import Data.Text
 import Text.Blaze.Html.Renderer.String (renderHtml)
-import Text.Hamlet hiding (renderHtml)
+import Text.Hamlet
 
 data Url = Haskell | Yesod
 
+renderUrl :: Url -> p -> Text
 renderUrl Haskell _ = pack "http://haskell.org"
 renderUrl Yesod   _ = pack "http://www.yesodweb.com"
 
+title :: Text
 title = pack "This is in scope of the template below"
 
 template :: HtmlUrl Url
