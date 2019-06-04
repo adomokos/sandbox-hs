@@ -1,6 +1,5 @@
-
-{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 module FoldableTraversable.EnhancedProjectSpec where
 
@@ -31,19 +30,27 @@ data Project a
   = Project T.Text a
   | ProjectGroup T.Text [Project a]
   -- deriving (Show, Eq, Functor, Foldable, Traversable)
-   deriving (Show, Eq, Foldable, Traversable)
+   deriving (Show, Eq)
 
 instance Functor Project where
   fmap f (Project text x) = Project text (f x)
   fmap f (ProjectGroup text projects) = ProjectGroup text ((fmap . fmap) f projects)
 
-{-
 instance Foldable Project where
   -- foldr f z (Project text x) = f x z
   -- foldl f z (Project text x) = f z x
-  foldMap f (Project _text x) = f x
-  foldMap f (ProjectGroup _text (x:xs)) = f x <> foldMap f xs
--}
+  foldMap :: Monoid m => (a -> m) -> Project a -> m
+  foldMap f = mconcat . map f . toAs
+
+instance Traversable Project where
+  traverse :: Applicative f => (a -> f b) -> Project a -> f (Project b)
+  traverse f (Project text a) = Project text <$> f a
+  traverse f (ProjectGroup text projs) =
+      ProjectGroup text <$> traverse (traverse f) projs
+
+toAs :: Project a -> [a]
+toAs (Project      _text a    ) = [a]
+toAs (ProjectGroup _text projs) = concatMap toAs projs
 
 data Budget =
   Budget

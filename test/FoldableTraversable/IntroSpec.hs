@@ -1,3 +1,4 @@
+
 module FoldableTraversable.IntroSpec where
 
 import Data.Foldable (fold)
@@ -59,8 +60,9 @@ spec = do
   describe "Foldable of custom types" $ do
     it "works with FIdentity" $ do
       -- Why this one does not work?
-      -- (foldMap (+ 2) (FIdentity 3) :: MySum Integer) `shouldBe` MySum 5
-      (foldMap (+ 2) (FIdentity 3) :: Sum Integer) `shouldBe` Sum 5
+      (foldMap (`plus` MySum 2) (FIdentity $ MySum 3) :: MySum Integer)
+        `shouldBe` MySum 5
+      -- (foldMap (+ 2) (FIdentity 3) :: Sum Integer) `shouldBe` Sum 5
 
   describe "Operations with NonEmpty" $ do
     it "is foldable" $ do
@@ -74,3 +76,6 @@ spec = do
       traverse greaterThanThree (NE.fromList [1 .. 5]) `shouldBe` Nothing
       traverse greaterThanThree (NE.fromList [4 .. 7])
         `shouldBe` NE.nonEmpty [4 .. 7]
+
+plus :: Num a => MySum a -> MySum a -> MySum a
+plus (MySum a) (MySum b) = MySum $ a + b
