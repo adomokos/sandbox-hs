@@ -11,7 +11,6 @@ import Control.Concurrent.Async.Lifted
 import Control.Monad.State.Strict
 import Control.Monad.Reader
 import Control.Concurrent.STM
-import Control.Lens
 import Say
 import Prelude hiding (log)
 
