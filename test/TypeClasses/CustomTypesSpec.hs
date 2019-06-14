@@ -1,7 +1,7 @@
 module TypeClasses.CustomTypesSpec where
 
-import Test.Hspec
 import Data.Monoid (Sum(..))
+import Test.Hspec
 
 -- MyMaybe - like Maybe
 data MyMaybe a = MyNothing
@@ -35,7 +35,7 @@ instance Foldable MyMaybe where
 
 instance Traversable MyMaybe where
   traverse _ MyNothing = pure MyNothing
-  traverse f (MyJust x) = MyJust <$> (f x)
+  traverse f (MyJust x) = MyJust <$> f x
 
 -- MyEither - like Either
 data MyEither a b = MyLeft a
@@ -85,56 +85,47 @@ spec = do
   describe "TypeClass Custom Implementations" $ do
     context "Maybe-like MyMaybe" $ do
       it "works as Functor" $ do
-        fmap (+2) MyNothing `shouldBe` (MyNothing :: MyMaybe Int)
-        fmap (+2) (MyJust 3) `shouldBe` (MyJust 5 :: MyMaybe Int)
+        fmap (+ 2) MyNothing `shouldBe` (MyNothing :: MyMaybe Int)
+        fmap (+ 2) (MyJust 3) `shouldBe` (MyJust 5 :: MyMaybe Int)
       it "works as Applicative" $ do
-        (+) <$> (MyJust 2) <*> (MyJust 3 :: MyMaybe Int)
-          `shouldBe` MyJust 5
-        (+) <$> MyNothing <*> (MyJust 3 :: MyMaybe Int)
-          `shouldBe` MyNothing
+        (+) <$> MyJust 2 <*> (MyJust 3 :: MyMaybe Int) `shouldBe` MyJust 5
+        (+) <$> MyNothing <*> (MyJust 3 :: MyMaybe Int) `shouldBe` MyNothing
       it "works as Monad" $ do
-        (pure 2 >>= (\x -> MyJust (x+3))) `shouldBe` (MyJust 5 :: MyMaybe Int)
-        (MyNothing >>= (\x -> MyJust (x+3))) `shouldBe` (MyNothing :: MyMaybe Int)
-        (pure (2 :: Int) >>= (\_ -> MyNothing)) `shouldBe` (MyNothing :: MyMaybe Int)
+        (pure 2 >>= (\x -> MyJust (x + 3))) `shouldBe` (MyJust 5 :: MyMaybe Int)
+        (MyNothing >>= (\x -> MyJust (x + 3)))
+          `shouldBe` (MyNothing :: MyMaybe Int)
+        (pure (2 :: Int) >> MyNothing) `shouldBe` (MyNothing :: MyMaybe Int)
       it "works as Foldable" $ do
-        let fm = foldMap (+1)
-        (fm MyNothing :: Sum Integer)
-          `shouldBe` Sum 0
-        (fm (MyJust 3) :: Sum Integer)
-          `shouldBe` Sum 4
+        let fm = foldMap (+ 1)
+        (fm MyNothing :: Sum Integer) `shouldBe` Sum 0
+        (fm (MyJust 3) :: Sum Integer) `shouldBe` Sum 4
       it "works as Traversable" $ do
-        let tfn x = MyJust (x+1)
-        traverse tfn (MyJust 3 :: MyMaybe Int)
-          `shouldBe` MyJust (MyJust 4)
-        traverse tfn (MyNothing :: MyMaybe Int)
-          `shouldBe` MyJust (MyNothing)
+        let tfn x = MyJust (x + 1)
+        traverse tfn (MyJust 3 :: MyMaybe Int) `shouldBe` MyJust (MyJust 4)
+        traverse tfn (MyNothing :: MyMaybe Int) `shouldBe` MyJust MyNothing
 
     context "Either-like MyEither" $ do
       it "works as Functor" $ do
-        fmap (+2) leftString `shouldBe` leftString
-        fmap (+2) rightInt `shouldBe` MyRight 5
+        fmap (+ 2) leftString `shouldBe` leftString
+        fmap (+ 2) rightInt `shouldBe` MyRight 5
       it "works as Aplicative" $ do
-        MyRight (+2) <*> rightInt
-          `shouldBe` MyRight 5
-        MyRight (+2) <*> leftString
-          `shouldBe` leftString
-        MyLeft "Hello" <*> rightInt
-          `shouldBe` leftString
+        MyRight (+ 2) <*> rightInt `shouldBe` MyRight 5
+        MyRight (+ 2) <*> leftString `shouldBe` leftString
+        MyLeft "Hello" <*> rightInt `shouldBe` leftString
       it "works as Monad" $ do
-        (leftString >>= (\x -> MyRight (x+3)))
-          `shouldBe` MyLeft "Hello"
-        ((pure 2 :: MyEither String Int) >>= (\x -> MyRight (x+3)))
+        (leftString >>= (\x -> MyRight (x + 3))) `shouldBe` MyLeft "Hello"
+        ((pure 2 :: MyEither String Int) >>= (\x -> MyRight (x + 3)))
           `shouldBe` (MyRight 5 :: MyEither String Int)
-        ((pure 2 :: MyEither String Int) >>= (\_ -> leftString))
+        ((pure 2 :: MyEither String Int) >> leftString)
           `shouldBe` (MyLeft "Hello" :: MyEither String Int)
       it "works as Foldable" $ do
-        let fm = foldMap (+1)
-        (fm (MyLeft ("Hello" :: String)) :: Sum Integer)
-          `shouldBe` Sum 0
-        (fm (MyRight 4) :: Sum Integer)
-          `shouldBe` Sum 5
+        let fm = foldMap (+ 1)
+        (fm (MyLeft ("Hello" :: String)) :: Sum Integer) `shouldBe` Sum 0
+        (fm (MyRight 4) :: Sum Integer) `shouldBe` Sum 5
       it "works as Traversable" $ do
-        let tfn x = MyRight (x+1)
+        let tfn x = MyRight (x + 1)
         traverse tfn (MyRight 3)
-          `shouldBe` (MyRight (MyRight 4) :: MyEither String (MyEither String Int))
-
+          `shouldBe` (MyRight (MyRight 4) :: MyEither
+                         String
+                         (MyEither String Int)
+                     )
