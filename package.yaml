@@ -90,6 +90,7 @@ tests:
     - lifted-async
     - say
     - random
+    - rio
     - semigroups
     - stm
     - shakespeare
