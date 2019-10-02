@@ -24,7 +24,7 @@ spec =
     it "helps with specific errors" $ do
       let (Left errorMsg) =
             eitherDecode "[1,2,[3,4]]" :: Either String (Int, Int, (Int, Bool))
-      errorMsg `shouldContain` "expected Bool, encountered Number"
+      errorMsg `shouldContain` "expected Bool, but encountered Number"
     it "parses properly with eitherDecode" $ do
       let (Right x) =
             eitherDecode "[1,2,[3,true]]" :: Either String (Int, Int, (Int, Bool))
