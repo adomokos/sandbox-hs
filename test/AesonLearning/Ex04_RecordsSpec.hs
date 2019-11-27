@@ -2,8 +2,21 @@
 {-# LANGUAGE RecordWildCards #-}
 module AesonLearning.Ex04_RecordsSpec where
 
-import Test.Hspec
 import Data.Aeson
+  ( FromJSON
+  , ToJSON
+  , decode
+  , encode
+  , object
+  , parseJSON
+  , toJSON
+  , withObject
+  , (.!=)
+  , (.:)
+  , (.:?)
+  , (.=)
+  )
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
@@ -29,7 +42,7 @@ instance FromJSON PersonRW where
   parseJSON = withObject "person" $ \o -> do
     nameRW <- o .: "name"
     ageRW  <- o .: "age"
-    return PersonRW{..}
+    pure $ PersonRW nameRW ageRW
 
 instance ToJSON PersonRW where
   toJSON PersonRW{..} = object [
@@ -45,7 +58,7 @@ instance FromJSON PersonPP where
     lastName  <- o .: "surname"
     let namePP = firstName ++ " " ++ lastName
     agePP     <- o .: "age"
-    return PersonPP {..}
+    pure PersonPP {..}
 
 -- Optional fields
 data PersonOF =
@@ -55,7 +68,7 @@ instance FromJSON PersonOF where
   parseJSON = withObject "person" $ \o -> do
     nameOF <- o .: "name"
     ageOF  <- o .:? "age" .!= 18
-    return PersonOF {..}
+    pure PersonOF {..}
 
 spec :: Spec
 spec = do

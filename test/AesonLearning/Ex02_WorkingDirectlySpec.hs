@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module AesonLearning.Ex02_WorkingDirectlySpec where
 
+import Data.Aeson (Value(..), encode, object, (.=))
+import qualified Data.Text.Lazy.Encoding as TL
+import GHC.Exts (fromList)
 import Test.Hspec
-import Data.Aeson
-import GHC.Exts -- (fromList)
-import qualified Data.Text.Lazy.Encoding as T
 
 main :: IO ()
 main = hspec spec
@@ -23,8 +23,8 @@ spec :: Spec
 spec =
   describe "Working Directly with JSON" $ do
     it "can encode the JSON object" $ do
-      let result = T.decodeUtf8 . encode $ val
+      let result = TL.decodeUtf8 . encode $ val
       result `shouldBe` "{\"boolean\":true,\"numbers\":[1,2,3]}"
     it "can use object to build up JSON" $ do
-      let result = T.decodeUtf8 . encode $ val'
+      let result = TL.decodeUtf8 . encode $ val'
       result `shouldBe` "{\"boolean\":true,\"numbers\":[1,2,3]}"

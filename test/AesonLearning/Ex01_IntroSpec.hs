@@ -1,7 +1,7 @@
 module AesonLearning.Ex01_IntroSpec where
 
+import Data.Aeson (decode, eitherDecode, encode)
 import Test.Hspec
-import Data.Aeson
 
 main :: IO ()
 main = hspec spec

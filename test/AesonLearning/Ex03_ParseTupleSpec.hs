@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module AesonLearning.Ex03_ParseTupleSpec where
 
-import Test.Hspec
-import Data.Aeson
-import Data.Aeson.Types -- that's where Parser comes from
-import qualified Data.HashMap.Strict as HM
-import qualified Data.Vector as V
+import Data.Aeson (decode)
+import Data.Aeson.Types
+  (Parser, Value(..), parseJSON, parseMaybe, withArray, withObject, (.:))
+import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text as T
+import qualified Data.Vector as V
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
@@ -14,48 +15,48 @@ main = hspec spec
 parseTuple :: Value -> Parser (String, Bool)
 parseTuple (Object obj) = do
   -- look up the "a" field
-  let mbFieldA = HM.lookup "a" obj
+  let mbFieldA = HashMap.lookup "a" obj
 
   -- fail if it wasn't found
   fieldA <- case mbFieldA of
-    Just x -> return x
+    Just x -> pure x
     Nothing -> fail "no field 'a'"
 
   -- Extract the value from it, or fail if it's of the wrong type
   a <- case fieldA of
-    String x -> return (T.unpack x)
+    String x -> pure (T.unpack x)
     _        -> fail "expected a string"
 
   -- Do all the same for "b" (in a slightly terser way, to save space):
-  b <- case HM.lookup "b" obj of
-    Just (Bool x) -> return x
+  b <- case HashMap.lookup "b" obj of
+    Just (Bool x) -> pure x
     Just _        -> fail "expected a boolean"
     Nothing       -> fail "no field 'b'"
 
   -- That's all!
-  return (a, b)
+  pure (a, b)
 parseTuple _other = error "Does not matter for now"
 
 parseTuple' :: Value -> Parser (String, Bool)
 parseTuple' = withObject "tuple" $ \obj -> do
   -- Parse "a"
-  a <- case HM.lookup "a" obj of
+  a <- case HashMap.lookup "a" obj of
     Just x -> parseJSON x
     Nothing -> fail "no field 'a'"
 
   -- Parse "b"
-  b <- case HM.lookup "b" obj of
+  b <- case HashMap.lookup "b" obj of
     Just x -> parseJSON x
     Nothing -> fail "no field 'b'"
 
   -- That's all!
-  return (a, b)
+  pure (a, b)
 
 parseTuple'' :: Value -> Parser (String, Bool)
 parseTuple'' = withObject "tuple" $ \o -> do
   a <- o .: "a"
   b <- o .: "b"
-  return (a, b)
+  pure (a, b)
 
 parseTuple''' :: Value -> Parser (String, Bool)
 parseTuple''' = withObject "tuple" $ \o ->
@@ -64,7 +65,7 @@ parseTuple''' = withObject "tuple" $ \o ->
 
 parseArray :: (Value -> Parser b) -> Value -> Parser [b]
 parseArray f = withArray "array of tuples" $ \arr ->
-               mapM f (V.toList arr)
+               traverse f (V.toList arr)
 
 spec :: Spec
 spec =

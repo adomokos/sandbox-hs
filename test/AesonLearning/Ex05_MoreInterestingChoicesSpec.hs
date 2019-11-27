@@ -2,11 +2,11 @@
 {-# LANGUAGE RecordWildCards #-}
 module AesonLearning.Ex05_MoreInterestingChoicesSpec where
 
+import Control.Applicative ((<|>))
+import Control.Monad (guard, when)
+import Data.Aeson (FromJSON, decode, eitherDecode, parseJSON, withObject, (.:))
+import Data.Foldable (asum)
 import Test.Hspec
-import Data.Aeson
-import Data.Foldable
-import Control.Applicative
-import Control.Monad
 import Text.Read (readMaybe)
 
 main :: IO ()
@@ -19,7 +19,7 @@ instance FromJSON Person where
   parseJSON = withObject "person" $ \o -> do
     name <- o .: "name"
     age <- o .: "age" <|> o .: "AGE"
-    return Person{..}
+    pure Person{..}
 
 -- Choosing from a list of parsers
 data PersonC =
@@ -35,13 +35,13 @@ instance FromJSON PersonC where
       do s <- o .: "age"
          case readMaybe s of
            Nothing -> fail "not a number"
-           Just x -> return x,
+           Just x -> pure x,
       -- The "tuple" case.
       o .: "AGE", -- Couldn't get this to work
       -- The "John" case.
       do guard (nameC == "John")
-         return 24 ]
-    return PersonC{..}
+         pure 24 ]
+    pure PersonC{..}
 
 data PersonG =
   PersonG {nameG :: String, ageG :: Int} deriving (Show, Eq)
@@ -52,7 +52,7 @@ instance FromJSON PersonG where
     when (nameG == "Ann") $
       fail "GO AWAY ANN"
     ageG <- o .: "age"
-    return PersonG{..}
+    pure PersonG{..}
 
 spec :: Spec
 spec = do
@@ -109,7 +109,7 @@ spec = do
     it "returns GO AWAY ANN in the failure for name Ann" $ do
       let sjson = "{\"age\":24,\"name\":\"Ann\"}"
 
-      let (Left x) = (eitherDecode sjson :: Either String PersonG)
+      let (Left x) = eitherDecode sjson :: Either String PersonG
       x `shouldBe` "Error in $: GO AWAY ANN"
 
     it "does not have error for non-Ann" $ do

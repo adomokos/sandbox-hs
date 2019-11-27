@@ -1,11 +1,11 @@
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
 module ReaderMonad.ReaderTFinalSpec where
 
-import Test.Hspec
 import Control.Concurrent.STM
 import Control.Monad.Reader
 import qualified Control.Monad.State.Strict as State
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
@@ -39,7 +39,7 @@ instance Monad m => MonadBalance (State.StateT Int m) where
   modifyBalance = State.modify
 
 modify' :: MonadBalance m => (Int -> Int) -> m ()
-modify' f = do
+modify' f =
   -- Now I know there's no way I'm performing IO here
   modifyBalance f
 

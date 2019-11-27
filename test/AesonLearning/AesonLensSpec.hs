@@ -1,16 +1,15 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 module AesonLearning.AesonLensSpec where
 
 import Test.Hspec
 
-import Control.Lens
+import Control.Lens ((^?))
 import qualified Data.Aeson as A
-import Data.Aeson.Lens
-import qualified Data.ByteString.Lazy as B
+import Data.Aeson.Lens (key, nth)
+import qualified Data.ByteString.Lazy as BSL
 import GHC.Exts (fromList)
 import GHC.Generics (Generic)
-import Data.Maybe (fromJust)
 
 main :: IO ()
 main = hspec spec
@@ -18,8 +17,8 @@ main = hspec spec
 jsonFile :: FilePath
 jsonFile = "test/assets/employee.json"
 
-getJSON :: IO B.ByteString
-getJSON = B.readFile jsonFile
+getJSON :: IO BSL.ByteString
+getJSON = BSL.readFile jsonFile
 
 expectedFirstDepartment :: A.Value
 expectedFirstDepartment =
@@ -37,9 +36,9 @@ data Department = Department {
 instance A.FromJSON Department
 
 spec :: Spec
-spec = do
+spec =
   describe "Aeson Lens" $ do
-    json <- runIO $ getJSON
+    json <- runIO getJSON
     it "can read fields" $ do
       let age = json ^? key "data" . key "person" . key "age"
       age `shouldBe` Just (A.Number 28)
@@ -51,6 +50,6 @@ spec = do
     it "can return entire JSON Segments" $ do
       let firstDepartment =
             json ^? key "data" . key "person" . key "departments" . nth 1
-          expectedDept = (A.fromJSON expectedFirstDepartment :: A.Result Department)
-          dept = (A.fromJSON (fromJust firstDepartment) :: A.Result Department)
-      expectedDept `shouldBe` dept
+          expectedDept = A.fromJSON expectedFirstDepartment :: A.Result Department
+          dept = A.fromJSON <$> firstDepartment :: Maybe (A.Result Department)
+      dept `shouldBe` Just expectedDept
