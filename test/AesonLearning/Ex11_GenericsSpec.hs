@@ -1,11 +1,12 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 module AesonLearning.Ex11_GenericsSpec where
 
 import Test.Hspec
 
-import GHC.Generics
-import Data.Aeson
+import Data.Aeson (FromJSON, ToJSON, decode, encode)
+import GHC.Generics (Generic)
 
 main :: IO ()
 main = hspec spec

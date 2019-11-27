@@ -2,26 +2,28 @@
 {-# LANGUAGE RecordWildCards #-}
 module AesonLearning.Ex08_ExtendedRecordsSpec where
 
-import Test.Hspec
 import Data.Aeson
-import GHC.Exts
+import GHC.Exts (fromList)
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
 
 data Name = Name {
   firstname :: String,
-  lastname  :: String } deriving (Show, Eq)
+  lastname  :: String
+} deriving (Show, Eq)
 
 data Person = Person {
   name :: Name,
-  age :: Int } deriving (Show, Eq)
+  age :: Int
+} deriving (Show, Eq)
 
 instance FromJSON Name where
   parseJSON = withObject "name" $ \o -> do
     firstname <- o .: "firstname"
     lastname  <- o .: "surname"
-    return Name {..}
+    pure Name {..}
 
 instance ToJSON Name where
   toJSON Name{..} = object [
@@ -32,7 +34,7 @@ instance FromJSON Person where
   parseJSON = withObject "person" $ \o -> do
     name <- parseJSON (Object o)
     age  <- o .: "age"
-    return Person {..}
+    pure Person {..}
 
 instance ToJSON Person where
   toJSON Person{..} = Object $
@@ -52,7 +54,7 @@ spec =
         p = Person name 38
 
     it "combines parsers for deserialization" $ do
-      let (Just person) = (decode sjson :: Maybe Person)
+      let (Just person) = decode sjson :: Maybe Person
       person `shouldBe` p
 
     it "combines parsers for serialization" $ do

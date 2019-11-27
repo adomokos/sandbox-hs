@@ -3,12 +3,13 @@
 {-# LANGUAGE TemplateHaskell #-}
 module AesonLearning.Ex13_TemplateHaskellSpec where
 
+import Data.Aeson (decode, encode)
+import Data.Aeson.TH (deriveJSON)
+import Data.Aeson.Types
+  (Parser, Value, defaultOptions, parseMaybe, withObject, (.:))
+import qualified Data.ByteString.Lazy.Char8 as BSL8
 import HereDoc
 import Test.Hspec
-import Data.Aeson
-import Data.Aeson.Types
-import Data.Aeson.TH
-import qualified Data.ByteString.Lazy.Char8 as L8
 
 data Person = Person {
   name :: String,
@@ -20,9 +21,9 @@ data Book = Book {
   author :: String }
   deriving (Show, Eq)
 
-concat <$> mapM (deriveJSON defaultOptions) [''Person, ''Book]
+concat <$> traverse (deriveJSON defaultOptions) [''Person, ''Book]
 
-trJson :: L8.ByteString
+trJson :: BSL8.ByteString
 trJson = [heredoc|
 {
   "data":[
@@ -49,10 +50,10 @@ spec = do
   describe "Using TemplateHaskell" $ do
     it "generates To/From parsers" $ do
       let sJson = "{\"name\":\"John Smith\",\"age\":25}"
-          (Just person) = decode sJson :: Maybe Person
+          person = decode sJson :: Maybe Person
           p = Person "John Smith" 25
 
-      person `shouldBe` p
+      person `shouldBe` Just p
 
       encode p `shouldBe` sJson
 

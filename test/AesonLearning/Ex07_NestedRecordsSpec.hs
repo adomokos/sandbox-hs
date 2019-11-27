@@ -1,10 +1,9 @@
-{-# LANGUAGE QuasiQuotes, OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 module AesonLearning.Ex07_NestedRecordsSpec where
 
+import Data.Aeson (FromJSON, decode, parseJSON, withObject, (.:))
+import Data.ByteString.Lazy.Internal (ByteString)
 import Test.Hspec
-import Data.Aeson
-import Data.ByteString.Lazy.Internal
 
 main :: IO ()
 main = hspec spec
@@ -40,7 +39,7 @@ spec :: Spec
 spec = do
   describe "Parsing with several record types" $ do
     it "picks the parser" $ do
-      let (Just p) = (decode jsonSample :: Maybe Story)
+      let (Just p) = decode jsonSample :: Maybe Story
 
       name p `shouldBe` "Nightfall"
       author p `shouldBe` "Isaac Asimov"

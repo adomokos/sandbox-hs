@@ -1,17 +1,29 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DeriveGeneric #-}
 module AesonLearning.Ex10_VerSpec where
 
-import HereDoc
-import Test.Hspec
-import Control.Applicative
+import Control.Applicative ((<|>))
 import Data.Aeson
-import Safe ( readMay )
-import qualified Data.ByteString.Lazy.Char8 as L8
+  ( FromJSON
+  , ToJSON
+  , Value(..)
+  , camelTo2
+  , eitherDecode
+  , object
+  , parseJSON
+  , toJSON
+  , withObject
+  , (.:)
+  , (.=)
+  )
+import qualified Data.ByteString.Lazy.Char8 as BSL8
 import qualified Data.Text as T
-import GHC.Generics ( Generic )
+import GHC.Generics (Generic)
+import HereDoc
+import Safe (readMay)
+import Test.Hspec
 
 (?) :: Bool -> a -> a -> a
 (?) True  t _ = t
@@ -19,7 +31,7 @@ import GHC.Generics ( Generic )
 
 infixl 1 ?
 
-rjson :: L8.ByteString
+rjson :: BSL8.ByteString
 rjson = [heredoc|
   [
       { "version":"3.0",
@@ -129,5 +141,3 @@ spec = do
                          , TypVer Pencil V1_2
                          , OccVer FullTime V1_0 ]
       r `shouldBe` expectedVers
-
-

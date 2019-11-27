@@ -1,10 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 module AesonLearning.Ex06_TypesWithManyConstructorSpec where
 
+import Data.Aeson (FromJSON, decode, parseJSON, withObject, (.:))
+import Data.Foldable (asum)
 import Test.Hspec
-import Data.Aeson
-import Data.Foldable
 
 main :: IO ()
 main = hspec spec

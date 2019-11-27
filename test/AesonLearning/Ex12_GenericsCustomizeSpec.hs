@@ -1,18 +1,32 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 module AesonLearning.Ex12_GenericsCustomizeSpec where
 
-import Test.Hspec
-import GHC.Generics
 import Data.Aeson
-import Data.Char
+  ( FromJSON
+  , ToJSON
+  , Value(..)
+  , camelTo2
+  , decode
+  , defaultOptions
+  , encode
+  , fieldLabelModifier
+  , genericParseJSON
+  , genericToJSON
+  , parseJSON
+  , toJSON
+  )
+import Data.Char (toLower)
+import GHC.Generics (Generic)
+import Test.Hspec
 
+import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Text as T
-import qualified Data.HashMap.Strict as HM
 
 data Person = Person {
   _name :: String,
-  _age  :: Int } deriving (Show, Eq, Generic)
+  _age  :: Int
+} deriving (Show, Eq, Generic)
 
 instance ToJSON Person where
   toJSON = genericToJSON defaultOptions {
@@ -25,7 +39,8 @@ instance FromJSON Person where
 -- Converts json keys from `legal_name` to `legalName`
 data Employee = Employee {
   legalName :: String,
-  minimumAge :: Int } deriving (Show, Eq, Generic)
+  minimumAge :: Int
+} deriving (Show, Eq, Generic)
 
 instance ToJSON Employee where
   toJSON = genericToJSON defaultOptions {
@@ -47,7 +62,7 @@ instance FromJSON WFPerson where
 
 -- | Turn all keys in a JSON object to lowercase.
 jsonLower :: Value -> Value
-jsonLower (Object o) = Object . HM.fromList . map lowerPair . HM.toList $ o
+jsonLower (Object o) = Object . HashMap.fromList . map lowerPair . HashMap.toList $ o
   where lowerPair (key, val) = (T.toLower key, val)
 jsonLower x = x
 

@@ -3,15 +3,14 @@
 {-# LANGUAGE RecordWildCards #-}
 module AesonLearning.Ex09_UnknownFieldNamesSpec where
 
+import Data.Aeson (decode)
+import Data.Aeson.Types (Parser, Value, parseEither, parseJSON)
+import qualified Data.ByteString.Lazy.Char8 as BSL8
+import qualified Data.HashMap.Strict as HashMap
 import HereDoc
 import Test.Hspec
-import Data.Aeson
-import Data.Aeson.Types
-import Data.Maybe
-import qualified Data.HashMap.Strict as HM
-import qualified Data.ByteString.Lazy.Char8 as L8
 
-rjson :: L8.ByteString
+rjson :: BSL8.ByteString
 rjson = [heredoc|
 {
     "website1.com": {
@@ -35,10 +34,10 @@ data Referer = Referer {
 parseReferers :: Value -> Parser [Referer]
 parseReferers p =
   -- Convert each "accesses" object to a list of pairs, and create a Referrer.
-  map (\(domain, accesses) -> Referer domain (HM.toList accesses)) .
+  map (\(domain, accesses) -> Referer domain (HashMap.toList accesses)) .
   -- Turn the HashMap into a list of (domain, accesses) pairs.
   -- Each "accesses" object looks like {"/page1": 3, ...}.
-  HM.toList <$>
+  HashMap.toList <$>
   -- Parse our data into a HashMap String (HashMap String Int).
   parseJSON p
 
@@ -46,8 +45,9 @@ spec :: Spec
 spec = do
   describe "Parsing unknown field names" $ do
     it "accesses it " $ do
-      let ojson = fromJust . decode $ rjson
-          (Right ref) = (parseEither parseReferers ojson) :: Either String [Referer]
+      let ojson = decode rjson
+          eitherJson = maybe (Left "decoding failed") Right ojson
+          (Right ref) = eitherJson >>= parseEither parseReferers :: Either String [Referer]
       length ref `shouldBe` 2
       let [ref1, ref2] = ref
       domain ref1 `shouldBe` "website1.com"
