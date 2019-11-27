@@ -1,11 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module DateTime.CompareSpec where
 
-import           Test.Hspec
-import           Data.Maybe (fromJust)
 import Control.Exception (evaluate)
 import qualified Data.Hourglass as H
-import qualified Data.Time      as DT
+import qualified Data.Time as DT
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
@@ -22,13 +21,13 @@ spec =
   describe "Comparing various date time parsing" $ do
     it "can parse incorrect date time with Hourglass" $ do
       let date =
-            H.dtDate . fromJust $ H.timeParse H.ISO8601_Date "2018-02-31"
+            H.dtDate <$> H.timeParse H.ISO8601_Date "2018-02-31"
 
       -- oops
-      date `shouldBe` H.Date 2018 H.February 31
+      date `shouldBe` Just (H.Date 2018 H.February 31)
 
     it "can properly parse string to incorrect DateTime" $ do
       let strDateTime = "2018-02-31"
           result = DT.parseTimeM True DT.defaultTimeLocale "%Y-%m-%d" strDateTime :: Either String DT.UTCTime
 
-      evaluate(result) `shouldThrow` anyErrorCall
+      evaluate result `shouldThrow` anyErrorCall

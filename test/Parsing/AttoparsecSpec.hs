@@ -3,12 +3,12 @@ module Parsing.AttoparsecSpec where
 
 -- Example from here: https://www.schoolofhaskell.com/school/starting-with-haskell/libraries-and-frameworks/text-manipulation/attoparsec
 
-import Test.Hspec
 import Control.Applicative
-import qualified Data.ByteString as B
 import Data.Attoparsec.ByteString.Char8
-import Data.Word
+import qualified Data.ByteString as BS
 import qualified Data.Time as DT
+import Data.Word
+import Test.Hspec
 
 -- | Types for the log file content
 data Product = Mouse | Keyboard | Monitor | Speakers
@@ -28,6 +28,7 @@ data IP = IP Word8 Word8 Word8 Word8 deriving (Eq, Show)
 
 data Source = Internet | Friend | NoAnswer deriving (Eq, Show)
 
+{- HLINT ignore ipParser -}
 ipParser :: Parser IP
 ipParser = do
   d1 <- decimal
@@ -37,7 +38,7 @@ ipParser = do
   d3 <- decimal
   _ <- char '.'
   d4 <- decimal
-  return $ IP d1 d2 d3 d4
+  pure $ IP d1 d2 d3 d4
 
 timeParser :: Parser DT.LocalTime
 timeParser = do
@@ -58,16 +59,16 @@ timeParser = do
 
 productParser :: Parser Product
 productParser =
-      (string "mouse" >> return Mouse)
-  <|> (string "keyboard" >> return Keyboard)
-  <|> (string "monitor" >> return Monitor)
-  <|> (string "speakers" >> return Speakers)
+      (string "mouse" >> pure Mouse)
+  <|> (string "keyboard" >> pure Keyboard)
+  <|> (string "monitor" >> pure Monitor)
+  <|> (string "speakers" >> pure Speakers)
 
 sourceParser :: Parser Source
 sourceParser =
-      (string "internet" >> return Internet)
-  <|> (string "friend" >> return Friend)
-  <|> (string "noanswer" >> return NoAnswer)
+      (string "internet" >> pure Internet)
+  <|> (string "friend" >> pure Friend)
+  <|> (string "noanswer" >> pure NoAnswer)
 
 -- | Combining small parsers into one bigger one
 logEntryParser :: Parser LogEntry
@@ -88,7 +89,7 @@ logEntryParser = do
   -- value followed by the parser to try.
   s <- option NoAnswer $ char ' ' >> sourceParser
   -- And return the result as a value of type 'LogEntry'
-  return $ LogEntry t ip p s
+  pure $ LogEntry t ip p s
 
 logParser :: Parser Log
 logParser = many $ logEntryParser <* endOfLine
@@ -125,6 +126,7 @@ timeParser2 = do
     DT.LocalTime { DT.localDay = DT.fromGregorian (read y) (read mm) (read d)
                  , DT.localTimeOfDay = DT.TimeOfDay (read h) (read m) (read s) }
 
+{- HLINT ignore euParser -}
 euParser :: Parser LogEntry
 euParser = do
   ip <- ipParser
@@ -158,7 +160,7 @@ spec = do
       entryIP le `shouldBe` IP 124 67 34 60
       entryProduct le `shouldBe` Keyboard
     it "parses multiple log entries" $ do
-      logEntries <- parseOnly logParser <$> B.readFile "./resources/sellings.log"
+      logEntries <- parseOnly logParser <$> BS.readFile "./resources/sellings.log"
       case logEntries of
         Left err -> fail err
         Right les -> length les `shouldBe` 12

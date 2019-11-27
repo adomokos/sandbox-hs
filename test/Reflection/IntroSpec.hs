@@ -1,15 +1,15 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Reflection.IntroSpec where
 
 -- https://chrisdone.com/posts/data-typeable
 
-import Test.Hspec
-import Data.Typeable
-import Data.Data
-import Control.Monad.State (execState, modify, forM_, evalState, get)
-import Data.Maybe (fromJust)
+import Control.Monad.State (evalState, execState, get, modify)
 import Data.Char (isUpper)
+import Data.Data
+import Data.Foldable (for_)
+import Data.Maybe (fromJust)
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
@@ -24,7 +24,7 @@ constructXWithState =
     (fromConstrM
       (do i <- get
           modify (+1)
-          return
+          pure
             (case i of
                0 -> fromConstr (toConstr (5::Int))
                1 -> fromConstr (toConstr 'b')
@@ -58,8 +58,8 @@ spec = do
         "DataType {tycon = \"Maybe\", datarep = AlgRep [Nothing,Just]}"
 
     it "2. can inspect a data type" $ do
-      (dataTypeOf (Just 'a')) `shouldSatisfy` isAlgType
-      (dataTypeOf 'a') `shouldNotSatisfy` isAlgType
+      dataTypeOf (Just 'a') `shouldSatisfy` isAlgType
+      dataTypeOf 'a' `shouldNotSatisfy` isAlgType
 
     it "3. can get the constructor of a value" $ do
       -- You can't do much with the constructor as-is,
@@ -85,7 +85,7 @@ spec = do
     it "can make a real value with more than one value in constructor" $ do
       -- with the State monad
       execState (modify (+1)) 2 `shouldBe` 3
-      execState (forM_ [1..5] (const (modify (+1)))) 5
+      execState (for_ [1..5] (const (modify (+1)))) 5
         `shouldBe` 10
       constructXWithState `shouldBe` X 5 'b'
 
@@ -99,7 +99,7 @@ spec = do
       result' `shouldBe` X 4 '!'
 
     it "7. can generate values from data structures" $ do
-      let result = gmapQ (\d -> toConstr d) (X 5 'a')
+      let result = gmapQ toConstr (X 5 'a')
       -- result `shouldBe` [5,'a']
       showConstr (head result) `shouldBe` "5"
       showConstr (last result) `shouldBe` "'a'"

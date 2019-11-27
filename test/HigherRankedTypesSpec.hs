@@ -22,7 +22,7 @@ combine x y = show x ++ show y
 -- We could have written the type signature this way:
 -- :: (Show a, Show b) => (forall a . Show a => a -> String) -> a -> b -> String
 -- Even though the type variable `a` is used twice, the type checker understands
--- the the instance inside of the `forall` scope is different from the one
+-- the instance inside of the `forall` scope is different from the one
 -- outside of it.
 -- The only thing the compiler needs to verify about the input of `f` is that it
 -- belongs to the `Show` typeclass.

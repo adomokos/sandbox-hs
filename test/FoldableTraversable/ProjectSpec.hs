@@ -6,21 +6,19 @@ module FoldableTraversable.ProjectSpec where
 
 import Data.Monoid (getSum)
 import qualified Data.Text as T
-import Data.Tree
+import Data.Tree (Tree(..), drawTree)
 import System.Random (getStdRandom, randomR)
 import Test.Hspec
-import Text.Printf
+import Text.Printf (printf)
 
 main :: IO ()
 main = hspec spec
 
-newtype Money =
-  Money
+newtype Money = Money
   { unMoney :: Double }
   deriving (Show, Eq, Num)
 
-newtype ProjectId =
-  ProjectId
+newtype ProjectId = ProjectId
   { unProjectId :: Int }
   deriving (Show, Eq, Num)
 
@@ -29,11 +27,10 @@ data Project
   | ProjectGroup T.Text [Project]
   deriving (Show, Eq)
 
-data Budget =
-  Budget
-    { budgetIncome :: Money
-    , budgetExpenditure :: Money }
-    deriving (Show, Eq)
+data Budget = Budget
+  { budgetIncome :: Money
+  , budgetExpenditure :: Money }
+  deriving (Show, Eq)
 
 data Transaction
   = Sale Money
@@ -71,7 +68,7 @@ data Report = Report
 
 instance Semigroup Report where
   (Report b1 n1 d1) <> (Report b2 n2 d2) =
-    Report (b1+b2) (n1+n2) (d1+d2)
+    Report (b1 + b2) (n1 + n2) (d1 + d2)
 
 instance Monoid Report where
   mempty = Report 0 0 0

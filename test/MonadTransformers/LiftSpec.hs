@@ -1,11 +1,11 @@
 -- http://taylor.fausak.me/2015/05/14/monad-transformers/
 module MonadTransformers.LiftSpec where
 
-import Test.Hspec
-import Data.Functor.Identity (Identity, runIdentity)
 import Control.Monad.Trans.Class (lift)
-import Control.Monad.Trans.Reader (ReaderT, Reader, ask, runReader, runReaderT)
-import Control.Monad.Trans.Writer (WriterT, Writer, tell, runWriter, runWriterT)
+import Control.Monad.Trans.Reader (Reader, ReaderT, ask, runReader, runReaderT)
+import Control.Monad.Trans.Writer (Writer, WriterT, runWriter, runWriterT, tell)
+import Data.Functor.Identity (Identity, runIdentity)
+import Test.Hspec
 
 {-
   lift - takes a function, that works in one monad and allows
@@ -27,9 +27,9 @@ type Output = Integer
 
 anIdentity :: Identity Output
 anIdentity = do
-  x <- return 3
+  x <- pure 3
   let y = x * 2
-  return y
+  pure y
 
 type RInput = Integer
 type ROutput = String
@@ -53,7 +53,7 @@ aWriter :: Writer WOutput WResult
 aWriter = do
   let x = 3
   tell ["The number was " ++ show x]
-  return x
+  pure x
 
 type SInput = Integer
 type SOutput = [String]
@@ -63,7 +63,7 @@ stack :: WriterT SOutput (ReaderT SInput Identity) SResult
 stack = do
   x <- lift ask
   tell ["The input was " ++ show x]
-  return x
+  pure x
 
 main :: IO ()
 main = hspec spec

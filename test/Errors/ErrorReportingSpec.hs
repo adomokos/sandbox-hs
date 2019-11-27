@@ -1,8 +1,8 @@
 module Errors.ErrorReportingSpec where
 
-import           Test.Hspec
-import           Errors.ErrorReporting
 import Control.Exception (evaluate)
+import Errors.ErrorReporting
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
@@ -27,5 +27,5 @@ spec =
     it "can use Monad and fail to generalize it" $ do
       myDiv4 4 2 `shouldBe` Just 2.0
       myDiv4 4 0 `shouldBe` Nothing
-      ((myDiv4 4 2) :: Either String Float) `shouldBe` Right 2.0
+      (myDiv4 4 2 :: Either String Float) `shouldBe` Right 2.0
       -- ((myDiv4 4 0) :: Either String Float) `shouldBe`Left "Division by zero"

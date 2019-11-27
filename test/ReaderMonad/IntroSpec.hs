@@ -35,7 +35,7 @@ local :: (e -> t) -> Reader t a -> Reader e a
   -- e <- ask
   -- pure $ runReader r (f e)
   -- more elegantly:
-local f r = fmap (\e -> runReader r (f e)) ask
+local f r = fmap (runReader r . f) ask
 
 fnReader :: a -> Reader e (a, e)
 fnReader x = do

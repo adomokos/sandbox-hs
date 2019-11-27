@@ -3,7 +3,9 @@
 module ReaderMonad.ReaderTFinalSpec where
 
 import Control.Concurrent.STM
+  (TVar, atomically, modifyTVar, modifyTVar', newTVarIO, readTVarIO)
 import Control.Monad.Reader
+  (MonadIO, MonadReader, ReaderT, ask, liftIO, runReaderT)
 import qualified Control.Monad.State.Strict as State
 import Test.Hspec
 

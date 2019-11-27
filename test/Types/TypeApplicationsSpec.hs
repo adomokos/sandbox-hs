@@ -1,8 +1,10 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 module Types.TypeApplicationsSpec where
 
+import Data.Text (pack, splitOn, unpack)
 import Test.Hspec
 
 main :: IO ()
@@ -23,7 +25,10 @@ instance Convertable User where
     length fn > 5 && length ln > 5
 
 instance Loadable User where
-  load input = User input "Bettencourt"
+  load input = User firstName lastName
+    where
+      firstName = unpack . head . splitOn " " $ pack input
+      lastName = unpack . last . splitOn " " $ pack input
 
 newtype Department = Department
   { depName :: String }
@@ -61,9 +66,9 @@ spec = do
       incShow @Double "3.4" `shouldBe` "4.4"
 
     it "checks if entity can be converted" $ do
-      user <- canBeConverted @User "Johnny"
+      user <- canBeConverted @User "Johnny Bettencourt"
       user `shouldBe` True
-      user' <- canBeConverted @User "John"
+      user' <- canBeConverted @User "John Smith"
       user' `shouldBe` False
 
       dep <- canBeConverted @Department "HR"

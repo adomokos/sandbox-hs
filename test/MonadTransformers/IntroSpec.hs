@@ -2,9 +2,9 @@ module MonadTransformers.IntroSpec where
 
 import Test.Hspec
 
-import Control.Monad
-import Control.Monad.Trans.Class
-import Control.Monad.Trans.Maybe
+import Control.Monad (guard)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Maybe (MaybeT, runMaybeT)
 
 run :: String -> IO String
 run pwd = do

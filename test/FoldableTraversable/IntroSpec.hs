@@ -3,7 +3,7 @@ module FoldableTraversable.IntroSpec where
 
 import Data.Foldable (fold)
 import qualified Data.List.NonEmpty as NE
-import Data.Monoid
+import Data.Monoid (All(..), Any(..), Product(..), Sum(..))
 import Test.Hspec
 
 main :: IO ()
@@ -32,6 +32,9 @@ instance Foldable FIdentity where
 greaterThanThree :: Int -> Maybe Int
 greaterThanThree x | x > 3     = Just x
                    | otherwise = Nothing
+
+plus :: Num a => MySum a -> MySum a -> MySum a
+plus (MySum a) (MySum b) = MySum $ a + b
 
 spec :: Spec
 spec = do
@@ -76,6 +79,3 @@ spec = do
       traverse greaterThanThree (NE.fromList [1 .. 5]) `shouldBe` Nothing
       traverse greaterThanThree (NE.fromList [4 .. 7])
         `shouldBe` NE.nonEmpty [4 .. 7]
-
-plus :: Num a => MySum a -> MySum a -> MySum a
-plus (MySum a) (MySum b) = MySum $ a + b

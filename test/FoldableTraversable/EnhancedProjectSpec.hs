@@ -8,21 +8,19 @@ module FoldableTraversable.EnhancedProjectSpec where
 import Data.Foldable (fold)
 import Data.Monoid (getSum)
 import qualified Data.Text as T
-import Data.Tree
+import Data.Tree (Tree(..), drawTree)
 import System.Random (getStdRandom, randomR)
 import Test.Hspec
-import Text.Printf
+import Text.Printf (printf)
 
 main :: IO ()
 main = hspec spec
 
-newtype Money =
-  Money
+newtype Money = Money
   { unMoney :: Double }
   deriving (Show, Eq, Num)
 
-newtype ProjectId =
-  ProjectId
+newtype ProjectId = ProjectId
   { unProjectId :: Int }
   deriving (Show, Eq, Num)
 
@@ -49,14 +47,13 @@ instance Traversable Project where
       ProjectGroup text <$> traverse (traverse f) projs
 
 toAs :: Project a -> [a]
-toAs (Project      _text a    ) = [a]
+toAs (Project _text a) = [a]
 toAs (ProjectGroup _text projs) = concatMap toAs projs
 
-data Budget =
-  Budget
-    { budgetIncome :: Money
-    , budgetExpenditure :: Money }
-    deriving (Show, Eq)
+data Budget = Budget
+  { budgetIncome :: Money
+  , budgetExpenditure :: Money
+  } deriving (Show, Eq)
 
 data Transaction
   = Sale Money
@@ -66,16 +63,16 @@ data Transaction
 someProject :: Project ProjectId
 someProject = ProjectGroup "Sweden" [stockholm, gothenburg, malmo]
  where
-  stockholm  = Project "Stockholm" 1
+  stockholm = Project "Stockholm" 1
   gothenburg = Project "Gothenburg" 2
-  malmo      = ProjectGroup "Malmo" [city, limhamn]
-  city       = Project "Malmo City" 3
-  limhamn    = Project "Limhamn" 4
+  malmo = ProjectGroup "Malmo" [city, limhamn]
+  city = Project "Malmo City" 3
+  limhamn = Project "Limhamn" 4
 
 -- The DB queries
 fetchBudget :: ProjectId -> IO Budget
 fetchBudget _projectId = do
-  income      <- Money <$> getStdRandom (randomR (5000, 10000))
+  income <- Money <$> getStdRandom (randomR (5000, 10000))
   expenditure <- Money <$> getStdRandom (randomR (0, 5000))
   pure Budget {budgetIncome = income, budgetExpenditure = expenditure}
 
@@ -90,7 +87,7 @@ data Report = Report
   { budgetProfit :: Money
   , netProfit :: Money
   , difference :: Money
-} deriving (Show, Eq)
+  } deriving (Show, Eq)
 
 instance Semigroup Report where
   (Report b1 n1 d1) <> (Report b2 n2 d2) =
@@ -102,13 +99,13 @@ instance Monoid Report where
 calculateReport :: Budget -> [Transaction] -> Report
 calculateReport budget transactions = Report
   { budgetProfit = budgetProfit'
-  , netProfit    = netProfit'
-  , difference   = netProfit' - budgetProfit'
+  , netProfit = netProfit'
+  , difference = netProfit' - budgetProfit'
   }
  where
   budgetProfit' = budgetIncome budget - budgetExpenditure budget
-  netProfit'    = getSum (foldMap asProfit transactions)
-  asProfit (Sale     m) = pure m
+  netProfit' = getSum (foldMap asProfit transactions)
+  asProfit (Sale m) = pure m
   asProfit (Purchase m) = pure (negate m)
 
 calculateProjectReport :: Project ProjectId -> IO (Project Report)

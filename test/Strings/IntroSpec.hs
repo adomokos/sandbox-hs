@@ -9,7 +9,7 @@ import qualified Data.Char as C
 import qualified Data.List as L
 import qualified Data.String (IsString(..))
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
+import qualified Data.Text.Encoding as T
 import qualified Data.Text.Lazy as TL
 
 main :: IO ()
@@ -77,11 +77,11 @@ spec = do
   -- you know your data format
   describe "Encoding" $ do
     it "encodeUtf8 :: Text -> ByteString" $ do
-      let x = TE.encodeUtf8 "Hello!"
+      let x = T.encodeUtf8 "Hello!"
       x `shouldBe` ("Hello!" :: BS.ByteString)
     it "decodeUtf8 :: ByteString -> Text" $ do
       let x = BS8.pack "Hello!"
-      TE.decodeUtf8 x `shouldBe` "Hello!"
+      T.decodeUtf8 x `shouldBe` "Hello!"
 
   describe "Custom type" $ it "can have an IsString implementation" $ do
     let myTypeAsString = "Hello" :: MyType

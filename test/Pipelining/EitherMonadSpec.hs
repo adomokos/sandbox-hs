@@ -2,15 +2,15 @@
 {-# LANGUAGE RecordWildCards #-}
 module Pipelining.EitherMonadSpec where
 
-import           Test.Hspec
 import qualified Data.Text as T
-import           Debug.Trace (traceShow)
+import Debug.Trace (traceShow)
+import Test.Hspec
 
 main :: IO ()
 main = hspec spec
 
 traceShow' :: Show b => b -> b
-traceShow' arg = traceShow ("\n\n:: tracing :: - " <> (show arg) <> "\n\n") arg
+traceShow' arg = traceShow ("\n\n:: tracing :: - " <> show arg <> "\n\n") arg
 
 data Person = Person { firstName :: String
                      , lastName :: String
@@ -19,7 +19,7 @@ data Person = Person { firstName :: String
 validateFirstName :: Person -> Either T.Text Person
 validateFirstName p@Person {..}
   | firstName == "" = Left "No firstname"
-  | otherwise = Right $ p -- to print it out use `traceShow' p`
+  | otherwise = Right p -- to print it out use `traceShow' p`
 
 validateLastName :: Person -> Either T.Text Person
 validateLastName p@Person {..}

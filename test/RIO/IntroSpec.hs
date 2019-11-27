@@ -1,6 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 module RIO.IntroSpec where
 
 -- examples from here: https://haskell.fpcomplete.com/library/rio
