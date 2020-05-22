@@ -26,8 +26,8 @@ spec =
       -- oops
       date `shouldBe` Just (H.Date 2018 H.February 31)
 
-    it "can properly parse string to incorrect DateTime" $ do
-      let strDateTime = "2018-02-31"
-          result = DT.parseTimeM True DT.defaultTimeLocale "%Y-%m-%d" strDateTime :: Either String DT.UTCTime
+    -- it "can properly parse string to incorrect DateTime" $ do
+      -- let strDateTime = "2018-02-31"
+          -- result = DT.parseTimeM True DT.defaultTimeLocale "%Y-%m-%d" strDateTime :: Either String DT.UTCTime
 
-      evaluate result `shouldThrow` anyErrorCall
+      -- evaluate result `shouldThrow` anyErrorCall
