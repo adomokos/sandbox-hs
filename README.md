@@ -2,7 +2,7 @@
 
 Kicking things around in Haskell.
 
-[![Build Status](https://travis-ci.org/adomokos/sandbox-hs.svg)](http://travis-ci.org/adomokos/sandbox-hs)
+[![CI](https://github.com/adomokos/sandbox-hs/actions/workflows/project-build.yml/badge.svg)](https://github.com/adomokos/sandbox-hs/actions/workflows/project-build.yml)
 
 ### Topics
 
