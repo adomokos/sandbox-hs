@@ -24,7 +24,7 @@ spec =
   describe "Working Directly with JSON" $ do
     it "can encode the JSON object" $ do
       let result = TL.decodeUtf8 . encode $ val
-      result `shouldBe` "{\"boolean\":true,\"numbers\":[1,2,3]}"
+      result `shouldBe` "{\"numbers\":[1,2,3],\"boolean\":true}"
     it "can use object to build up JSON" $ do
       let result = TL.decodeUtf8 . encode $ val'
-      result `shouldBe` "{\"boolean\":true,\"numbers\":[1,2,3]}"
+      result `shouldBe` "{\"numbers\":[1,2,3],\"boolean\":true}"
