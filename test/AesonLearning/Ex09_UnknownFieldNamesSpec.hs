@@ -50,5 +50,5 @@ spec = do
           (Right ref) = eitherJson >>= parseEither parseReferers :: Either String [Referer]
       length ref `shouldBe` 2
       let [ref1, ref2] = ref
-      domain ref1 `shouldBe` "website1.com"
-      domain ref2 `shouldBe` "website2.com"
+      domain ref1 `shouldBe` "website2.com"
+      domain ref2 `shouldBe` "website1.com"
